@@ -4,16 +4,57 @@ Guidance for Claude Code (and any contributor) when working in this repository.
 
 ## Project
 
-**iMenu** — a native macOS application built with SwiftUI.
+**iMenu** — a free, open-source, native macOS **menu bar overflow manager**.
+macOS silently clips menu bar items that don't fit the available width (a problem
+the notch makes worse). Instead of *hiding* the overflow behind a click-to-reveal
+popover the way incumbents (Ice, Bartender, Hidden Bar) do, iMenu **surfaces** it:
+it renders the clipped items in a **persistent second row directly below the
+system menu bar**, toggled from a single menu bar control. The bet is that for
+people who live in their menu bar all day, *seeing* everything beats *digging*
+for it.
 
 | | |
 |---|---|
-| Platform | macOS (deployment target **26.5**) |
-| UI | SwiftUI |
+| Platform | macOS (deployment target **26.5**) · macOS only |
+| UI | SwiftUI, native |
 | Language | Swift (language mode 5.0; toolchain Swift 6.3 / Xcode 26.6) |
 | Bundle ID | `com.nefarius.iMenu` |
+| License / model | Free & open source; no paid tier, accounts, or telemetry |
+| Distribution | Notarized direct download — **no Mac App Store** (sandbox forbids the required APIs) |
 | Unit tests | **Swift Testing** (`import Testing`, `@Test`, `#expect`) |
 | UI tests | XCTest (`XCUIApplication`) |
+
+Product docs live in `Documents/`: [`one-pager.md`](Documents/one-pager.md) and
+[`prd.md`](Documents/prd.md). Read them for full product context (personas,
+positioning, user stories, milestones); the essentials for working in this repo
+are below. **Keep this file consistent with those docs** — if they change, update
+here.
+
+### Current status — gated on a feasibility spike
+
+> ⚠️ **The product is pre-validation.** The entire product rests on **one
+> unproven technical bet**: can we reliably render a persistent, clickable second
+> row of *other apps'* clipped menu bar items — using permitted APIs — across the
+> notch, multiple displays, Stage Manager, Spaces, and full-screen, and keep it
+> working across macOS updates? Those items belong to other processes; we cannot
+> re-parent them.
+
+- **Milestone 0 (Feasibility Spike) is BLOCKING.** Until it proves a live,
+  clickable second row on a real Mac (notch machine + external display) and
+  documents which permission it forces (spacing manipulation vs. Accessibility
+  vs. Screen Recording), do **not** invest in real product engineering.
+- The spike is **throwaway**: **no** TDD, components, localization, or branding.
+  Its only job is to answer "does the mechanic work, and what does it cost?"
+- The **Working conventions** below apply to real product code (Milestone 1+),
+  *after* the spike passes — not to spike code.
+- If the spike fails, **stop** — the product doesn't exist in this form.
+
+### Non-goals (v1)
+
+- Not a full menu bar *customization* suite (icon theming, spacing editors,
+  per-app hide rules, search) — v1 wins on the second-row idea, not breadth.
+- No paid tier, licensing, telemetry-for-revenue, accounts, or cloud sync.
+- No Mac App Store build; no Windows / Linux / iOS.
 
 ### Xcode project layout
 
@@ -76,7 +117,9 @@ iMenuUITests/               # XCTest UI tests
 
 ## Working conventions
 
-These are the standing rules for this codebase. Follow them for every change.
+These are the standing rules for **product code** (Milestone 1+). Follow them for
+every change once past the feasibility spike (see _Current status_ above) — the
+throwaway Milestone 0 spike is exempt.
 
 ### 1. Test-Driven Development (TDD)
 
