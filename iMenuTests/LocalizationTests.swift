@@ -45,6 +45,25 @@ struct LocalizationTests {
         #expect(L10n.Errors.menuBarItemActivationFailed.isEmpty == false)
     }
 
+    @Test func systemBarStringsResolveToNonEmptyValues() {
+        #expect(L10n.SystemBar.dividerAccessibilityLabel.isEmpty == false)
+        #expect(L10n.SystemBar.dividerTooltip.isEmpty == false)
+    }
+
+    @Test func permissionsStringsResolveToNonEmptyValues() {
+        #expect(L10n.Permissions.accessibilitySection.isEmpty == false)
+        #expect(L10n.Permissions.accessibility.isEmpty == false)
+        #expect(L10n.Permissions.accessibilityDetail.isEmpty == false)
+        #expect(L10n.Permissions.accessibilityFooter.isEmpty == false)
+        #expect(L10n.Permissions.screenRecordingSection.isEmpty == false)
+        #expect(L10n.Permissions.screenRecording.isEmpty == false)
+        #expect(L10n.Permissions.screenRecordingDetail.isEmpty == false)
+        #expect(L10n.Permissions.screenRecordingFooter.isEmpty == false)
+        #expect(L10n.Permissions.granted.isEmpty == false)
+        #expect(L10n.Permissions.notGranted.isEmpty == false)
+        #expect(L10n.Permissions.openSystemSettings.isEmpty == false)
+    }
+
     @Test func aboutStringsResolveToNonEmptyValues() {
         #expect(L10n.About.author.isEmpty == false)
         #expect(L10n.About.role.isEmpty == false)

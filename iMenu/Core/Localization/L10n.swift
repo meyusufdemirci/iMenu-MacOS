@@ -74,6 +74,14 @@ enum L10n {
                    defaultValue: "Quit iMenu",
                    comment: "Menu bar item that quits the app entirely")
         }
+
+        /// DEBUG (milestones 0.5): manual toggle to exercise the divider-collapse
+        /// primitive on real hardware. Removed once the mechanic is proven.
+        static var toggleHiddenZoneDebug: String {
+            String(localized: "menubar.toggleHiddenZoneDebug",
+                   defaultValue: "Toggle Hidden Zone (debug)",
+                   comment: "Debug menu item that collapses/expands iMenu's menu bar divider to test the hide mechanic")
+        }
     }
 
     enum Settings {
@@ -255,6 +263,20 @@ enum L10n {
         }
     }
 
+    enum SystemBar {
+        static var dividerAccessibilityLabel: String {
+            String(localized: "systemBar.divider.accessibilityLabel",
+                   defaultValue: "iMenu hidden-items divider",
+                   comment: "Accessibility label for iMenu's menu bar divider that marks which items are hidden")
+        }
+
+        static var dividerTooltip: String {
+            String(localized: "systemBar.divider.tooltip",
+                   defaultValue: "Drag menu bar items to the left of this to hide them in iMenu's second row.",
+                   comment: "Tooltip on iMenu's menu bar divider explaining how to park items in the hidden zone")
+        }
+    }
+
     enum Home {
         static var title: String {
             String(localized: "home.title",
@@ -354,6 +376,30 @@ enum L10n {
             String(localized: "permissions.accessibility.footer",
                    defaultValue: "iMenu uses this only to read your menu bar layout — it never controls other apps.",
                    comment: "Reassurance about how the Accessibility permission is used")
+        }
+
+        static var screenRecordingSection: String {
+            String(localized: "permissions.screenRecording.section",
+                   defaultValue: "Screen Recording",
+                   comment: "Header for the Screen Recording section of the Permissions page")
+        }
+
+        static var screenRecording: String {
+            String(localized: "permissions.screenRecording.title",
+                   defaultValue: "Screen Recording",
+                   comment: "Title of the Screen Recording permission row")
+        }
+
+        static var screenRecordingDetail: String {
+            String(localized: "permissions.screenRecording.detail",
+                   defaultValue: "Lets iMenu capture how your menu bar items look so it can show their icons in the second row.",
+                   comment: "Explanation of why iMenu needs Screen Recording permission")
+        }
+
+        static var screenRecordingFooter: String {
+            String(localized: "permissions.screenRecording.footer",
+                   defaultValue: "iMenu captures only your menu bar to mirror item icons — nothing else on your screen is recorded or stored.",
+                   comment: "Reassurance about how the Screen Recording permission is used")
         }
 
         static var granted: String {

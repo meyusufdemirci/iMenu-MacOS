@@ -19,6 +19,21 @@
     - Note: `register()` only succeeds in a signed app run from `/Applications`;
       it throws from Xcode/DerivedData debug builds. Handle `.requiresApproval`
       (optionally `SMAppService.openSystemSettingsLoginItems()`).
+- [ ] Run as a menu bar accessory, not a Dock app. iMenu lives in the menu bar,
+      so it should not show a Dock icon while running in the background. Set the
+      activation policy to `.accessory` (equivalently `LSUIElement`/`Application
+      is agent` in Info.plist) so no Dock tile or app-switcher entry appears.
+    - Closing/quitting from the Dock (or ⌘Q on the main window) must **not**
+      terminate the process — the app keeps running and stays functional from
+      the menu bar. Return `false` from
+      `applicationShouldTerminateAfterLastWindowClosed(_:)` (or the SwiftUI
+      equivalent) so the last window closing hides rather than quits.
+    - Reopen the main window from the `MenuBarExtra` menu (the existing "Open"
+      item) and re-show it on Dock/reopen if a Dock icon is ever shown.
+    - Verify the second-row panel and `MenuBarExtra` survive with no visible
+      windows, and that Quit from the menu bar still fully exits.
+    - TDD the pure policy/lifecycle decision where possible (a small testable
+      rule, mirroring `SecondRowPresentation`), and keep strings in `L10n`.
 - [ ] Publish the project via Homebrew and other package management tools
 - [ ] Publish the app in the App Store
 - [ ] Market on Reddit, Hacker News, LinkedIn, X, and developer forums

@@ -20,12 +20,25 @@ struct MenuBarContent: View {
     /// Shared navigation state the menu routes the main window through.
     let navigation: AppNavigation
 
+    /// DEBUG (milestones 0.5): the divider collapser, exposed here so the hide
+    /// primitive can be toggled by hand while it's being validated on real
+    /// hardware. Reliable click target even when the divider is collapsed. Removed
+    /// once the mechanic is proven.
+    let collapser: DividerMenuBarCollapser
+
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Button(L10n.MenuBar.open) { openMainWindow() }
         Button(L10n.MenuBar.settings) { openMainWindow(to: .settings) }
         Button(L10n.MenuBar.about) { openMainWindow(to: .about) }
+
+        Divider()
+
+        // DEBUG (milestones 0.5): exercise the divider-collapse primitive by hand.
+        Button(L10n.MenuBar.toggleHiddenZoneDebug) {
+            collapser.setCollapsed(!collapser.isCollapsed)
+        }
 
         Divider()
 

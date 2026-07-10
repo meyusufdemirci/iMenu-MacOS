@@ -580,6 +580,18 @@
         }
       }
     },
+    "menubar.toggleHiddenZoneDebug" : {
+      "comment" : "Debug menu item that collapses/expands iMenu's menu bar divider to test the hide mechanic",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle Hidden Zone (debug)"
+          }
+        }
+      }
+    },
     "menubar.settings" : {
       "comment" : "Menu bar item that opens the main window on the Settings page",
       "extractionState" : "manual",
@@ -652,6 +664,54 @@
         }
       }
     },
+    "permissions.screenRecording.detail" : {
+      "comment" : "Explanation of why iMenu needs Screen Recording permission",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lets iMenu capture how your menu bar items look so it can show their icons in the second row."
+          }
+        }
+      }
+    },
+    "permissions.screenRecording.footer" : {
+      "comment" : "Reassurance about how the Screen Recording permission is used",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu captures only your menu bar to mirror item icons — nothing else on your screen is recorded or stored."
+          }
+        }
+      }
+    },
+    "permissions.screenRecording.section" : {
+      "comment" : "Header for the Screen Recording section of the Permissions page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screen Recording"
+          }
+        }
+      }
+    },
+    "permissions.screenRecording.title" : {
+      "comment" : "Title of the Screen Recording permission row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screen Recording"
+          }
+        }
+      }
+    },
     "permissions.status.granted" : {
       "comment" : "Status badge shown when a permission is granted",
       "extractionState" : "manual",
@@ -708,6 +768,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opens this menu bar item."
+          }
+        }
+      }
+    },
+    "systemBar.divider.accessibilityLabel" : {
+      "comment" : "Accessibility label for iMenu's menu bar divider that marks which items are hidden",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu hidden-items divider"
+          }
+        }
+      }
+    },
+    "systemBar.divider.tooltip" : {
+      "comment" : "Tooltip on iMenu's menu bar divider explaining how to park items in the hidden zone",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag menu bar items to the left of this to hide them in iMenu's second row."
           }
         }
       }
