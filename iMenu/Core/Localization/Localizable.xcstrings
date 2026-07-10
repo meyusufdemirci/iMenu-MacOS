@@ -1,6 +1,90 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "about.author" : {
+      "comment" : "Name of the app's author, shown on the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yusuf Demirci"
+          }
+        }
+      }
+    },
+    "about.free" : {
+      "comment" : "Note that the app is free, shown on the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu is completely free to use."
+          }
+        }
+      }
+    },
+    "about.link.github" : {
+      "comment" : "Label for the author's GitHub profile link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub"
+          }
+        }
+      }
+    },
+    "about.link.linkedin" : {
+      "comment" : "Label for the author's LinkedIn profile link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LinkedIn"
+          }
+        }
+      }
+    },
+    "about.link.x" : {
+      "comment" : "Label for the author's X (formerly Twitter) profile link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X"
+          }
+        }
+      }
+    },
+    "about.madeWithLove" : {
+      "comment" : "Sign-off shown with a heart icon at the bottom of the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Made with love"
+          }
+        }
+      }
+    },
+    "about.role" : {
+      "comment" : "The author's role, shown under their name on the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer"
+          }
+        }
+      }
+    },
     "app.name" : {
       "comment" : "The application name, shown as the sidebar title",
       "extractionState" : "manual",

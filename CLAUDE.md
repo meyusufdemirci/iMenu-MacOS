@@ -102,7 +102,8 @@ iMenu/
       SettingsStore.swift   # @Observable, UserDefaults-backed preferences
       SettingsView.swift    # Settings page — composes components
     About/
-      AboutView.swift       # About page — the error-handling loop demo
+      SocialLink.swift      # Value type: the author's external profile links
+      AboutView.swift       # About page — author, links, free-to-use note
   Components/               # Reusable, self-contained SwiftUI views
     CardView.swift
     PrimaryButton.swift

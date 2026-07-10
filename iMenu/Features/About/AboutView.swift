@@ -9,34 +9,34 @@ import SwiftUI
 
 /// The About page of the side menu.
 ///
-/// Composes reusable components (`CardView`, `PrimaryButton`) and demonstrates
-/// the full error-handling loop — the canonical pattern for a screen: wire
-/// data, localization, logging, and `AppError` together while delegating
-/// presentation to components.
+/// Introduces the app and its author, links out to the author's profiles, and
+/// notes that iMenu is free. Kept thin: it wires data and localization together
+/// and delegates presentation to `CardView` and `SocialLinkButton`.
 struct AboutView: View {
-    @State private var statusMessage = L10n.Home.ready
+    private let links = SocialLink.developerLinks
 
     var body: some View {
         CardView {
-            VStack(spacing: 16) {
-                Image(systemName: "fork.knife.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.tint)
+            VStack(spacing: 20) {
+                header
 
-                Text(L10n.Home.title)
-                    .font(.title2.bold())
+                VStack(spacing: 8) {
+                    ForEach(links) { link in
+                        SocialLinkButton(
+                            title: link.title,
+                            systemImage: link.systemImage,
+                            url: link.url
+                        )
+                    }
+                }
 
-                Text(L10n.Home.subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Text(statusMessage)
+                Text(L10n.About.free)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                PrimaryButton(L10n.Home.refresh, systemImage: "arrow.clockwise") {
-                    refresh()
-                }
+                Label(L10n.About.madeWithLove, systemImage: "heart.fill")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.pink)
             }
             .multilineTextAlignment(.center)
         }
@@ -48,26 +48,24 @@ struct AboutView: View {
         }
     }
 
-    /// Demonstrates the full error-handling loop: attempt work, and on failure
-    /// log the `AppError` and surface its localized description to the user.
-    private func refresh() {
-        AppLogger.shared.info("Refresh tapped", category: .ui)
-        do {
-            try performRefresh()
-            statusMessage = L10n.Home.refreshed
-        } catch let error as AppError {
-            AppLogger.shared.error(error, category: .ui)
-            statusMessage = error.errorDescription ?? L10n.Errors.unknown
-        } catch {
-            AppLogger.shared.error(.unexpected(error.localizedDescription), category: .ui)
-            statusMessage = L10n.Errors.unknown
-        }
-    }
+    /// App mark, name, and author attribution.
+    private var header: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "fork.knife.circle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.tint)
 
-    /// Placeholder for real work; currently always succeeds. Swap in the actual
-    /// menu-loading logic here and throw `AppError` on failure.
-    private func performRefresh() throws {
-        // e.g. throw AppError.notFound(resource: "Menu")
+            Text(L10n.App.name)
+                .font(.title2.bold())
+
+            VStack(spacing: 2) {
+                Text(L10n.About.author)
+                    .font(.subheadline.weight(.medium))
+                Text(L10n.About.role)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 }
 

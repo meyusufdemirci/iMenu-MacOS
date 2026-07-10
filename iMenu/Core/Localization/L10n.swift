@@ -102,6 +102,50 @@ enum L10n {
         }
     }
 
+    enum About {
+        static var author: String {
+            String(localized: "about.author",
+                   defaultValue: "Yusuf Demirci",
+                   comment: "Name of the app's author, shown on the About page")
+        }
+
+        static var role: String {
+            String(localized: "about.role",
+                   defaultValue: "Developer",
+                   comment: "The author's role, shown under their name on the About page")
+        }
+
+        static var free: String {
+            String(localized: "about.free",
+                   defaultValue: "iMenu is completely free to use.",
+                   comment: "Note that the app is free, shown on the About page")
+        }
+
+        static var madeWithLove: String {
+            String(localized: "about.madeWithLove",
+                   defaultValue: "Made with love",
+                   comment: "Sign-off shown with a heart icon at the bottom of the About page")
+        }
+
+        static var linkedIn: String {
+            String(localized: "about.link.linkedin",
+                   defaultValue: "LinkedIn",
+                   comment: "Label for the author's LinkedIn profile link")
+        }
+
+        static var x: String {
+            String(localized: "about.link.x",
+                   defaultValue: "X",
+                   comment: "Label for the author's X (formerly Twitter) profile link")
+        }
+
+        static var github: String {
+            String(localized: "about.link.github",
+                   defaultValue: "GitHub",
+                   comment: "Label for the author's GitHub profile link")
+        }
+    }
+
     enum Errors {
         static var unknown: String {
             String(localized: "error.unknown",

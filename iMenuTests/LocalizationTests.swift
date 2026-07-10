@@ -38,4 +38,14 @@ struct LocalizationTests {
         #expect(L10n.Settings.showSecondRow.isEmpty == false)
         #expect(L10n.Settings.showSecondRowDetail.isEmpty == false)
     }
+
+    @Test func aboutStringsResolveToNonEmptyValues() {
+        #expect(L10n.About.author.isEmpty == false)
+        #expect(L10n.About.role.isEmpty == false)
+        #expect(L10n.About.free.isEmpty == false)
+        #expect(L10n.About.madeWithLove.isEmpty == false)
+        #expect(L10n.About.linkedIn.isEmpty == false)
+        #expect(L10n.About.x.isEmpty == false)
+        #expect(L10n.About.github.isEmpty == false)
+    }
 }
