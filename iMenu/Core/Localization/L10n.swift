@@ -16,6 +16,60 @@ import Foundation
 /// Keep all keys in this one file so the string surface is easy to audit.
 enum L10n {
 
+    enum App {
+        static var name: String {
+            String(localized: "app.name",
+                   defaultValue: "iMenu",
+                   comment: "The application name, shown as the sidebar title")
+        }
+    }
+
+    enum Sidebar {
+        static var settings: String {
+            String(localized: "sidebar.settings",
+                   defaultValue: "Settings",
+                   comment: "Side menu label for the Settings page")
+        }
+
+        static var about: String {
+            String(localized: "sidebar.about",
+                   defaultValue: "About",
+                   comment: "Side menu label for the About page")
+        }
+    }
+
+    enum Settings {
+        static var generalSection: String {
+            String(localized: "settings.section.general",
+                   defaultValue: "General",
+                   comment: "Header for the general section of Settings")
+        }
+
+        static var launchAtLogin: String {
+            String(localized: "settings.launchAtLogin",
+                   defaultValue: "Launch at login",
+                   comment: "Title of the launch-at-login preference")
+        }
+
+        static var launchAtLoginDetail: String {
+            String(localized: "settings.launchAtLogin.detail",
+                   defaultValue: "Open iMenu automatically when you log in.",
+                   comment: "Explanation of the launch-at-login preference")
+        }
+
+        static var showSecondRow: String {
+            String(localized: "settings.showSecondRow",
+                   defaultValue: "Show the second row automatically",
+                   comment: "Title of the show-second-row preference")
+        }
+
+        static var showSecondRowDetail: String {
+            String(localized: "settings.showSecondRow.detail",
+                   defaultValue: "Reveal clipped menu bar items in a second row when iMenu starts.",
+                   comment: "Explanation of the show-second-row preference")
+        }
+    }
+
     enum Home {
         static var title: String {
             String(localized: "home.title",

@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "app.name" : {
+      "comment" : "The application name, shown as the sidebar title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu"
+          }
+        }
+      }
+    },
     "error.invalidInput" : {
       "comment" : "Description for AppError.invalidInput; %@ is the field name",
       "extractionState" : "manual",
@@ -165,6 +177,90 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Welcome to iMenu"
+          }
+        }
+      }
+    },
+    "settings.launchAtLogin" : {
+      "comment" : "Title of the launch-at-login preference",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launch at login"
+          }
+        }
+      }
+    },
+    "settings.launchAtLogin.detail" : {
+      "comment" : "Explanation of the launch-at-login preference",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iMenu automatically when you log in."
+          }
+        }
+      }
+    },
+    "settings.section.general" : {
+      "comment" : "Header for the general section of Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        }
+      }
+    },
+    "settings.showSecondRow" : {
+      "comment" : "Title of the show-second-row preference",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show the second row automatically"
+          }
+        }
+      }
+    },
+    "settings.showSecondRow.detail" : {
+      "comment" : "Explanation of the show-second-row preference",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reveal clipped menu bar items in a second row when iMenu starts."
+          }
+        }
+      }
+    },
+    "sidebar.about" : {
+      "comment" : "Side menu label for the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
+    },
+    "sidebar.settings" : {
+      "comment" : "Side menu label for the Settings page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
           }
         }
       }

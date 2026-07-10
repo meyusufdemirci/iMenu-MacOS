@@ -7,65 +7,42 @@
 
 import SwiftUI
 
-/// The home screen.
+/// The main window.
 ///
-/// Deliberately thin: it *composes* reusable components (`CardView`,
-/// `PrimaryButton`) and delegates strings to `L10n`, logging to `AppLogger`,
-/// and failures to `AppError`. This is the pattern to follow for new screens.
+/// A `NavigationSplitView` whose sidebar is the app's **side menu** (driven by
+/// `SidebarItem`) and whose detail shows the selected page. Settings is the
+/// first item and the default selection. Kept thin: it owns the shared
+/// `SettingsStore`, drives selection, and routes to a page view — each page
+/// composes its own components.
 struct MainView: View {
-    @State private var statusMessage = L10n.Home.ready
+    @State private var selection: SidebarItem = .settings
+    @State private var settings = SettingsStore()
 
     var body: some View {
-        CardView {
-            VStack(spacing: 16) {
-                Image(systemName: "fork.knife.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.tint)
-
-                Text(L10n.Home.title)
-                    .font(.title2.bold())
-
-                Text(L10n.Home.subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Text(statusMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                PrimaryButton(L10n.Home.refresh, systemImage: "arrow.clockwise") {
-                    refresh()
-                }
+        NavigationSplitView {
+            List(SidebarItem.allCases, selection: $selection) { item in
+                Label(item.title, systemImage: item.systemImage)
+                    .tag(item)
             }
-            .multilineTextAlignment(.center)
+            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
+            .navigationTitle(L10n.App.name)
+        } detail: {
+            detail(for: selection)
         }
-        .frame(width: 320)
-        .padding()
         .onAppear {
-            AppLogger.shared.info("Home screen appeared", category: .ui)
+            AppLogger.shared.info("Main view appeared", category: .ui)
         }
     }
 
-    /// Demonstrates the full error-handling loop: attempt work, and on failure
-    /// log the `AppError` and surface its localized description to the user.
-    private func refresh() {
-        AppLogger.shared.info("Refresh tapped", category: .ui)
-        do {
-            try performRefresh()
-            statusMessage = L10n.Home.refreshed
-        } catch let error as AppError {
-            AppLogger.shared.error(error, category: .ui)
-            statusMessage = error.errorDescription ?? L10n.Errors.unknown
-        } catch {
-            AppLogger.shared.error(.unexpected(error.localizedDescription), category: .ui)
-            statusMessage = L10n.Errors.unknown
+    /// Routes the current sidebar selection to its page view.
+    @ViewBuilder
+    private func detail(for item: SidebarItem) -> some View {
+        switch item {
+        case .settings:
+            SettingsView(settings: settings)
+        case .about:
+            AboutView()
         }
-    }
-
-    /// Placeholder for real work; currently always succeeds. Swap in the actual
-    /// menu-loading logic here and throw `AppError` on failure.
-    private func performRefresh() throws {
-        // e.g. throw AppError.notFound(resource: "Menu")
     }
 }
 

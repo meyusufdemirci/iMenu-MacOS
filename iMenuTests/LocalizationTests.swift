@@ -27,4 +27,15 @@ struct LocalizationTests {
         #expect(L10n.Errors.notFound("Menu").contains("Menu"))
         #expect(L10n.Errors.invalidInput("email").contains("email"))
     }
+
+    @Test func sidebarAndSettingsStringsResolveToNonEmptyValues() {
+        #expect(L10n.App.name.isEmpty == false)
+        #expect(L10n.Sidebar.settings.isEmpty == false)
+        #expect(L10n.Sidebar.about.isEmpty == false)
+        #expect(L10n.Settings.generalSection.isEmpty == false)
+        #expect(L10n.Settings.launchAtLogin.isEmpty == false)
+        #expect(L10n.Settings.launchAtLoginDetail.isEmpty == false)
+        #expect(L10n.Settings.showSecondRow.isEmpty == false)
+        #expect(L10n.Settings.showSecondRowDetail.isEmpty == false)
+    }
 }

@@ -94,10 +94,19 @@ xcodebuild -list -project iMenu.xcodeproj
 ```
 iMenu/
   iMenuApp.swift            # @main entry point
-  ContentView.swift         # Home screen — composes components (keep it thin)
+  MainView.swift            # Root window: side-menu split view (keep it thin)
+  Navigation/
+    SidebarItem.swift       # The side-menu pages (Settings first)
+  Features/                 # One folder per screen/feature
+    Settings/
+      SettingsStore.swift   # @Observable, UserDefaults-backed preferences
+      SettingsView.swift    # Settings page — composes components
+    About/
+      AboutView.swift       # About page — the error-handling loop demo
   Components/               # Reusable, self-contained SwiftUI views
     CardView.swift
     PrimaryButton.swift
+    SettingToggleRow.swift
   Core/                     # App-wide infrastructure (no UI)
     ErrorHandling/
       AppError.swift        # The single app-wide error type
@@ -142,7 +151,7 @@ Write the test first. The cycle is **Red → Green → Refactor**:
 Build the UI from small, reusable, single-responsibility views.
 
 - Reusable views live in `iMenu/Components/` (e.g. `CardView`, `PrimaryButton`).
-- Screens (like `ContentView`) **compose** components and stay thin — they wire
+- Screens (like `MainView` / `SettingsView`) **compose** components and stay thin — they wire
   data, localization, logging, and error handling together but delegate
   presentation to components.
 - Every component owns its styling so restyling happens in one place. Give each
