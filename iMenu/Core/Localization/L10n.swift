@@ -293,6 +293,50 @@ enum L10n {
         }
     }
 
+    enum Permissions {
+        static var accessibilitySection: String {
+            String(localized: "permissions.accessibility.section",
+                   defaultValue: "Accessibility",
+                   comment: "Header for the Accessibility section of the Permissions page")
+        }
+
+        static var accessibility: String {
+            String(localized: "permissions.accessibility.title",
+                   defaultValue: "Accessibility",
+                   comment: "Title of the Accessibility permission row")
+        }
+
+        static var accessibilityDetail: String {
+            String(localized: "permissions.accessibility.detail",
+                   defaultValue: "Lets iMenu read the menu bar items of other apps.",
+                   comment: "Explanation of why iMenu needs Accessibility permission")
+        }
+
+        static var accessibilityFooter: String {
+            String(localized: "permissions.accessibility.footer",
+                   defaultValue: "iMenu uses this only to read your menu bar layout — it never controls other apps.",
+                   comment: "Reassurance about how the Accessibility permission is used")
+        }
+
+        static var granted: String {
+            String(localized: "permissions.status.granted",
+                   defaultValue: "Granted",
+                   comment: "Status badge shown when a permission is granted")
+        }
+
+        static var notGranted: String {
+            String(localized: "permissions.status.notGranted",
+                   defaultValue: "Not granted",
+                   comment: "Status badge shown when a permission has not been granted")
+        }
+
+        static var openSystemSettings: String {
+            String(localized: "permissions.openSystemSettings",
+                   defaultValue: "Open System Settings",
+                   comment: "Button that opens System Settings to grant a permission")
+        }
+    }
+
     enum Errors {
         static var unknown: String {
             String(localized: "error.unknown",

@@ -18,7 +18,7 @@ struct SidebarItemTests {
     }
 
     @Test func pagesAppearInTheExpectedOrder() {
-        #expect(SidebarItem.allCases == [.layout, .settings, .about])
+        #expect(SidebarItem.allCases == [.layout, .permissions, .settings, .about])
     }
 
     @Test func everyItemHasATitleAndIcon() {

@@ -30,7 +30,7 @@ struct LayoutStoreTests {
     }
 
     private func item(_ id: String) -> MenuBarItemDescriptor {
-        MenuBarItemDescriptor(id: id, title: id.capitalized, ownerName: "Test", systemSymbolName: nil)
+        MenuBarItemDescriptor(id: id, title: id.capitalized, ownerName: "Test", systemSymbolName: nil, bundleIdentifier: nil)
     }
 
     private func store(_ items: [MenuBarItemDescriptor], defaults: UserDefaults) -> LayoutStore {

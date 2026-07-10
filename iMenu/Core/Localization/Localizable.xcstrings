@@ -1,6 +1,90 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "permissions.accessibility.detail" : {
+      "comment" : "Explanation of why iMenu needs Accessibility permission",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lets iMenu read the menu bar items of other apps."
+          }
+        }
+      }
+    },
+    "permissions.accessibility.footer" : {
+      "comment" : "Reassurance about how the Accessibility permission is used",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu uses this only to read your menu bar layout — it never controls other apps."
+          }
+        }
+      }
+    },
+    "permissions.accessibility.section" : {
+      "comment" : "Header for the Accessibility section of the Permissions page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessibility"
+          }
+        }
+      }
+    },
+    "permissions.accessibility.title" : {
+      "comment" : "Title of the Accessibility permission row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessibility"
+          }
+        }
+      }
+    },
+    "permissions.openSystemSettings" : {
+      "comment" : "Button that opens System Settings to grant a permission",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open System Settings"
+          }
+        }
+      }
+    },
+    "permissions.status.granted" : {
+      "comment" : "Status badge shown when a permission is granted",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Granted"
+          }
+        }
+      }
+    },
+    "permissions.status.notGranted" : {
+      "comment" : "Status badge shown when a permission has not been granted",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not granted"
+          }
+        }
+      }
+    },
     "about.author" : {
       "comment" : "Name of the app's author, shown on the About page",
       "extractionState" : "manual",

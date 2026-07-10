@@ -32,7 +32,11 @@ struct ReorderableMenuBarRow: View {
         HStack(spacing: 10) {
             Spacer(minLength: 0)
             ForEach(items) { item in
-                MenuBarItemChip(title: item.displayTitle, systemSymbolName: item.systemSymbolName)
+                MenuBarItemChip(
+                    title: item.displayTitle,
+                    systemSymbolName: item.systemSymbolName,
+                    bundleIdentifier: item.bundleIdentifier
+                )
                     .overlay(alignment: .leading) { insertionIndicator(for: item) }
                     .draggable(item.id)
                     .dropDestination(for: String.self) { droppedIDs, _ in

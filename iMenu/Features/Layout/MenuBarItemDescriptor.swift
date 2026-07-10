@@ -25,8 +25,13 @@ nonisolated struct MenuBarItemDescriptor: Identifiable, Equatable, Hashable, Sen
     /// The app that owns the item, shown as a subtitle.
     let ownerName: String
 
-    /// SF Symbol used to represent the item, when one is known.
+    /// SF Symbol used to represent the item, when one is known (sample data and
+    /// fallbacks). Real items resolve their icon from `bundleIdentifier` instead.
     let systemSymbolName: String?
+
+    /// Bundle identifier of the owning app, used to resolve its icon. `nil` for
+    /// sample items or apps without a bundle id.
+    let bundleIdentifier: String?
 
     /// What to show as the primary label: the item's title, or its owning app
     /// when the item has no title of its own (common for icon-only extras).

@@ -28,4 +28,12 @@ struct AppNavigationTests {
         navigation.show(.settings)
         #expect(navigation.selection == .settings)
     }
+
+    @Test func launchLandsOnLayoutWhenAllPermissionsGranted() {
+        #expect(AppNavigation.launchSelection(allPermissionsGranted: true) == .layout)
+    }
+
+    @Test func launchLandsOnPermissionsWhenAnyPermissionMissing() {
+        #expect(AppNavigation.launchSelection(allPermissionsGranted: false) == .permissions)
+    }
 }

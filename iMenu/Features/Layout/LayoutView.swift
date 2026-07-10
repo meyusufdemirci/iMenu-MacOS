@@ -33,7 +33,10 @@ struct LayoutView: View {
             }
             .onAppear {
                 AppLogger.shared.info("Layout screen appeared", category: .ui)
-                if store.state == .idle {
+                // Re-fetch on every visit unless we already have items — so newly
+                // granted Accessibility permission (from the Permissions page) is
+                // reflected without a manual refresh.
+                if store.state != .loaded {
                     store.load()
                 }
             }
@@ -102,7 +105,10 @@ struct LayoutView: View {
 }
 
 #Preview {
-    let store = LayoutStore(defaults: UserDefaults(suiteName: "preview.layout")!)
+    let store = LayoutStore(
+        provider: SampleMenuBarLayoutProvider(),
+        defaults: UserDefaults(suiteName: "preview.layout")!
+    )
     store.load()
     return LayoutView(store: store)
         .frame(width: 480, height: 420)

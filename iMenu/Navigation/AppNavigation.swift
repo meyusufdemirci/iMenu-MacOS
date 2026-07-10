@@ -28,6 +28,16 @@ final class AppNavigation {
         self.selection = selection
     }
 
+    /// The page the window should land on at launch. Sends the user straight to
+    /// **Permissions** when any required permission is still missing (so they can
+    /// grant it), otherwise starts on **Layout**.
+    ///
+    /// - Parameter allPermissionsGranted: Whether every permission iMenu needs is
+    ///   granted (see `PermissionsStore.allGranted`).
+    static func launchSelection(allPermissionsGranted: Bool) -> SidebarItem {
+        allPermissionsGranted ? .layout : .permissions
+    }
+
     /// Route the main window to `page`. Call this *before* opening/activating the
     /// window so it appears already on the requested page.
     func show(_ page: SidebarItem) {

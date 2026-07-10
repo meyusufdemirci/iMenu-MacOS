@@ -6,22 +6,52 @@
 //
 
 import SwiftUI
+import AppKit
 
 /// The Permissions page of the side menu.
 ///
-/// Placeholder for now — it will host the system-permission prompts (e.g.
-/// Accessibility / Screen Recording) iMenu needs to render the second row. Kept
-/// thin: it only sets its navigation title and logs its appearance.
+/// Shows the state of each system permission iMenu relies on. For now that's
+/// **Accessibility**, which is required to read other apps' menu bar items — when
+/// it isn't granted, the row offers a button that prompts and opens System
+/// Settings. Kept thin: it composes `PermissionStatusRow` and re-reads the state
+/// through its `PermissionsStore` on appear and whenever the app is reactivated
+/// (e.g. returning from System Settings).
 struct PermissionsView: View {
+
+    /// The source of truth for the current permission state.
+    let store: PermissionsStore
+
     var body: some View {
-        Color.clear
-            .navigationTitle(L10n.Sidebar.permissions)
-            .onAppear {
-                AppLogger.shared.info("Permissions screen appeared", category: .ui)
+        Form {
+            Section {
+                PermissionStatusRow(
+                    title: L10n.Permissions.accessibility,
+                    subtitle: L10n.Permissions.accessibilityDetail,
+                    isGranted: store.accessibilityGranted,
+                    grantTitle: L10n.Permissions.openSystemSettings,
+                    grantAction: { store.requestAccess() }
+                )
+            } header: {
+                Text(L10n.Permissions.accessibilitySection)
+            } footer: {
+                Text(L10n.Permissions.accessibilityFooter)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+        }
+        .formStyle(.grouped)
+        .navigationTitle(L10n.Sidebar.permissions)
+        .onAppear {
+            AppLogger.shared.info("Permissions screen appeared", category: .ui)
+            store.refresh()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            store.refresh()
+        }
     }
 }
 
 #Preview {
-    PermissionsView()
+    PermissionsView(store: PermissionsStore())
+        .frame(width: 460, height: 300)
 }

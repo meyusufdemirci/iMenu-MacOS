@@ -14,12 +14,12 @@ import Testing
 struct MenuBarLayoutTests {
 
     @Test func displayTitleUsesTitleWhenPresent() {
-        let item = MenuBarItemDescriptor(id: "x", title: "Wi-Fi", ownerName: "System", systemSymbolName: "wifi")
+        let item = MenuBarItemDescriptor(id: "x", title: "Wi-Fi", ownerName: "System", systemSymbolName: "wifi", bundleIdentifier: nil)
         #expect(item.displayTitle == "Wi-Fi")
     }
 
     @Test func displayTitleFallsBackToOwnerWhenTitleEmpty() {
-        let item = MenuBarItemDescriptor(id: "x", title: "", ownerName: "System", systemSymbolName: nil)
+        let item = MenuBarItemDescriptor(id: "x", title: "", ownerName: "System", systemSymbolName: nil, bundleIdentifier: nil)
         #expect(item.displayTitle == "System")
     }
 

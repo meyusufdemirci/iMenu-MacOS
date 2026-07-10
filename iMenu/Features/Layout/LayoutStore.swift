@@ -41,11 +41,11 @@ final class LayoutStore {
     @ObservationIgnored private let defaults: UserDefaults
 
     /// - Parameters:
-    ///   - provider: Where items come from. Defaults to the sample provider;
-    ///     tests inject a stub.
+    ///   - provider: Where items come from. Defaults to the real Accessibility
+    ///     provider; previews use the sample provider and tests inject a stub.
     ///   - defaults: Where the chosen order is persisted. Defaults to `.standard`;
     ///     tests inject an isolated suite.
-    init(provider: MenuBarLayoutProviding = SampleMenuBarLayoutProvider(), defaults: UserDefaults = .standard) {
+    init(provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(), defaults: UserDefaults = .standard) {
         self.provider = provider
         self.defaults = defaults
     }

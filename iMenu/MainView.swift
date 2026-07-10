@@ -26,6 +26,14 @@ struct MainView: View {
     /// Shared Layout state (menu bar items and their order).
     let layoutStore: LayoutStore
 
+    /// Shared permission state (Accessibility).
+    let permissionsStore: PermissionsStore
+
+    /// Owns the second-row panel; started here so it's running once the app's UI
+    /// is up. Its observation outlives this window, so a later window close/reopen
+    /// leaves the row untouched (`start()` is idempotent).
+    let secondRow: SecondRowController
+
     var body: some View {
         NavigationSplitView {
             List(SidebarItem.allCases, selection: $navigation.selection) { item in
@@ -39,6 +47,7 @@ struct MainView: View {
         }
         .onAppear {
             AppLogger.shared.info("Main view appeared", category: .ui)
+            secondRow.start()
         }
     }
 
@@ -51,7 +60,7 @@ struct MainView: View {
         case .layout:
             LayoutView(store: layoutStore)
         case .permissions:
-            PermissionsView()
+            PermissionsView(store: permissionsStore)
         case .about:
             AboutView()
         }
@@ -59,5 +68,13 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView(navigation: AppNavigation(), settings: SettingsStore(), layoutStore: LayoutStore())
+    let settings = SettingsStore()
+    let layoutStore = LayoutStore()
+    return MainView(
+        navigation: AppNavigation(),
+        settings: settings,
+        layoutStore: layoutStore,
+        permissionsStore: PermissionsStore(),
+        secondRow: SecondRowController(store: layoutStore, settings: settings)
+    )
 }
