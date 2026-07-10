@@ -1,0 +1,106 @@
+//
+//  L10n.swift
+//  iMenu
+//
+//  Created by Yusuf Demirci on 10.07.2026.
+//
+
+import Foundation
+
+/// Type-safe access to localized strings.
+///
+/// Localization is **English-only for now**, but every user-facing string is
+/// routed through `String(localized:)` and stored in `Localizable.xcstrings`.
+/// Adding a language later means translating the catalog — no code changes.
+///
+/// Keep all keys in this one file so the string surface is easy to audit.
+enum L10n {
+
+    enum Home {
+        static var title: String {
+            String(localized: "home.title",
+                   defaultValue: "Welcome to iMenu",
+                   comment: "Title shown on the home screen")
+        }
+
+        static var subtitle: String {
+            String(localized: "home.subtitle",
+                   defaultValue: "Your menu, one click away.",
+                   comment: "Subtitle shown under the home title")
+        }
+
+        static var refresh: String {
+            String(localized: "home.refresh",
+                   defaultValue: "Refresh",
+                   comment: "Title of the refresh button")
+        }
+
+        static var ready: String {
+            String(localized: "home.status.ready",
+                   defaultValue: "Ready.",
+                   comment: "Default status message on the home screen")
+        }
+
+        static var refreshed: String {
+            String(localized: "home.status.refreshed",
+                   defaultValue: "Refreshed successfully.",
+                   comment: "Status message shown after a successful refresh")
+        }
+    }
+
+    enum Errors {
+        static var unknown: String {
+            String(localized: "error.unknown",
+                   defaultValue: "An unknown error occurred.",
+                   comment: "Description for AppError.unknown")
+        }
+
+        static func unexpected(_ detail: String) -> String {
+            String(localized: "error.unexpected",
+                   defaultValue: "Something unexpected happened: \(detail)",
+                   comment: "Description for AppError.unexpected; %@ is a developer detail")
+        }
+
+        static func invalidInput(_ field: String) -> String {
+            String(localized: "error.invalidInput",
+                   defaultValue: "The value provided for \(field) is not valid.",
+                   comment: "Description for AppError.invalidInput; %@ is the field name")
+        }
+
+        static func notFound(_ resource: String) -> String {
+            String(localized: "error.notFound",
+                   defaultValue: "We couldn’t find \(resource).",
+                   comment: "Description for AppError.notFound; %@ is the resource name")
+        }
+
+        static func persistence(_ detail: String) -> String {
+            String(localized: "error.persistence",
+                   defaultValue: "Saving your data failed: \(detail)",
+                   comment: "Description for AppError.persistence; %@ is a developer detail")
+        }
+
+        static var permissionDenied: String {
+            String(localized: "error.permissionDenied",
+                   defaultValue: "You don’t have permission to do that.",
+                   comment: "Description for AppError.permissionDenied")
+        }
+
+        static var recoveryGeneric: String {
+            String(localized: "error.recovery.generic",
+                   defaultValue: "Please try again.",
+                   comment: "Generic recovery suggestion")
+        }
+
+        static var recoveryPermission: String {
+            String(localized: "error.recovery.permission",
+                   defaultValue: "Grant the required permission in System Settings and try again.",
+                   comment: "Recovery suggestion for a permission error")
+        }
+
+        static var recoveryInvalidInput: String {
+            String(localized: "error.recovery.invalidInput",
+                   defaultValue: "Check the highlighted field and try again.",
+                   comment: "Recovery suggestion for an invalid-input error")
+        }
+    }
+}

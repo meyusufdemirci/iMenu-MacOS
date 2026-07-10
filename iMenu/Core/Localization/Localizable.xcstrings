@@ -1,0 +1,174 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "error.invalidInput" : {
+      "comment" : "Description for AppError.invalidInput; %@ is the field name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The value provided for %@ is not valid."
+          }
+        }
+      }
+    },
+    "error.notFound" : {
+      "comment" : "Description for AppError.notFound; %@ is the resource name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn’t find %@."
+          }
+        }
+      }
+    },
+    "error.permissionDenied" : {
+      "comment" : "Description for AppError.permissionDenied",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You don’t have permission to do that."
+          }
+        }
+      }
+    },
+    "error.persistence" : {
+      "comment" : "Description for AppError.persistence; %@ is a developer detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving your data failed: %@"
+          }
+        }
+      }
+    },
+    "error.recovery.generic" : {
+      "comment" : "Generic recovery suggestion",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again."
+          }
+        }
+      }
+    },
+    "error.recovery.invalidInput" : {
+      "comment" : "Recovery suggestion for an invalid-input error",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check the highlighted field and try again."
+          }
+        }
+      }
+    },
+    "error.recovery.permission" : {
+      "comment" : "Recovery suggestion for a permission error",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grant the required permission in System Settings and try again."
+          }
+        }
+      }
+    },
+    "error.unexpected" : {
+      "comment" : "Description for AppError.unexpected; %@ is a developer detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something unexpected happened: %@"
+          }
+        }
+      }
+    },
+    "error.unknown" : {
+      "comment" : "Description for AppError.unknown",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error occurred."
+          }
+        }
+      }
+    },
+    "home.refresh" : {
+      "comment" : "Title of the refresh button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "home.status.ready" : {
+      "comment" : "Default status message on the home screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready."
+          }
+        }
+      }
+    },
+    "home.status.refreshed" : {
+      "comment" : "Status message shown after a successful refresh",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refreshed successfully."
+          }
+        }
+      }
+    },
+    "home.subtitle" : {
+      "comment" : "Subtitle shown under the home title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your menu, one click away."
+          }
+        }
+      }
+    },
+    "home.title" : {
+      "comment" : "Title shown on the home screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to iMenu"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
