@@ -33,9 +33,14 @@ enum SecondRowPlacement {
         horizontalInset: CGFloat = 8
     ) -> CGRect {
         // Top edge lines up with the bottom of the menu bar; the row hangs below.
+        // On a notched Mac the menu bar band *is* the notch band, so hanging below
+        // it keeps the row clear of the notch (FR6).
         let originY = screenFrame.maxY - menuBarHeight - contentSize.height
-        // Right edge sits `horizontalInset` in from the screen's right edge.
-        let originX = screenFrame.maxX - contentSize.width - horizontalInset
+        // Right edge sits `horizontalInset` in from the screen's right edge, but
+        // never let a row wider than the screen run off the left edge — clamp its
+        // left edge to the screen so it stays on-screen (degenerate over-wide case).
+        let rightAlignedX = screenFrame.maxX - contentSize.width - horizontalInset
+        let originX = max(screenFrame.minX, rightAlignedX)
         return CGRect(origin: CGPoint(x: originX, y: originY), size: contentSize)
     }
 }

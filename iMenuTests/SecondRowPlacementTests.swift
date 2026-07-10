@@ -60,4 +60,50 @@ struct SecondRowPlacementTests {
         #expect(frame.maxX == external.maxX - 8)
         #expect(frame.maxY == external.maxY - 24)
     }
+
+    /// FR6: on a notched Mac the menu bar band *is* the camera-housing band, so a
+    /// row hung below a notch-height menu bar must never overlap the notch. Locks
+    /// this in so a future re-anchor (wider row, centered layout) can't regress it.
+    @Test func doesNotIntersectTheNotch() {
+        // A notched MacBook's menu bar is taller than a standard 24pt bar.
+        let notchHeight: CGFloat = 38
+        let frame = SecondRowPlacement.frame(
+            contentSize: CGSize(width: 300, height: 30),
+            screenFrame: screen,
+            menuBarHeight: notchHeight
+        )
+        // The camera housing occupies the horizontal center of the menu bar band.
+        let notch = CGRect(
+            x: screen.midX - 100,
+            y: screen.maxY - notchHeight,
+            width: 200,
+            height: notchHeight
+        )
+        #expect(frame.intersects(notch) == false)
+        // And it sits entirely below the whole menu bar band, not just the notch.
+        #expect(frame.maxY <= screen.maxY - notchHeight)
+    }
+
+    /// A row wider than its screen (many hidden items) must still be placed on the
+    /// screen rather than running off the left edge into negative coordinates.
+    @Test func staysOnScreenWhenContentIsWiderThanTheScreen() {
+        let frame = SecondRowPlacement.frame(
+            contentSize: CGSize(width: screen.width + 400, height: 28),
+            screenFrame: screen,
+            menuBarHeight: 24
+        )
+        #expect(frame.minX >= screen.minX)
+    }
+
+    /// The same clamp, relative to an offset external display: the row never runs
+    /// off that screen's left edge.
+    @Test func staysOnAnOffsetScreenWhenContentIsTooWide() {
+        let external = CGRect(x: 1440, y: 0, width: 1024, height: 768)
+        let frame = SecondRowPlacement.frame(
+            contentSize: CGSize(width: external.width + 300, height: 28),
+            screenFrame: external,
+            menuBarHeight: 24
+        )
+        #expect(frame.minX >= external.minX)
+    }
 }
