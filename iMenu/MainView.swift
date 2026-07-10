@@ -45,6 +45,8 @@ struct MainView: View {
         switch item {
         case .settings:
             SettingsView(settings: settings)
+        case .layout:
+            LayoutView()
         case .about:
             AboutView()
         }

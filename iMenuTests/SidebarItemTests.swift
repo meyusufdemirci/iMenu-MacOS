@@ -9,12 +9,16 @@ import Testing
 @testable import iMenu
 
 /// The side menu is driven by `SidebarItem`. These tests pin the contract the
-/// UI relies on: a stable ordering (Settings first), presentable metadata for
+/// UI relies on: a stable ordering (Layout first), presentable metadata for
 /// every page, and unique identities so `List` selection behaves.
 struct SidebarItemTests {
 
-    @Test func settingsIsTheFirstPage() {
-        #expect(SidebarItem.allCases.first == .settings)
+    @Test func layoutIsTheFirstPage() {
+        #expect(SidebarItem.allCases.first == .layout)
+    }
+
+    @Test func pagesAppearInTheExpectedOrder() {
+        #expect(SidebarItem.allCases == [.layout, .settings, .about])
     }
 
     @Test func everyItemHasATitleAndIcon() {

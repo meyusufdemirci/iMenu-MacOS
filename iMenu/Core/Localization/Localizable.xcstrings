@@ -385,6 +385,18 @@
         }
       }
     },
+    "sidebar.layout" : {
+      "comment" : "Side menu label for the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout"
+          }
+        }
+      }
+    },
     "sidebar.settings" : {
       "comment" : "Side menu label for the Settings page",
       "extractionState" : "manual",

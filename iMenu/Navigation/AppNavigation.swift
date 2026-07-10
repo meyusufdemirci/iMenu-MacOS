@@ -19,8 +19,9 @@ import Observation
 @Observable
 final class AppNavigation {
 
-    /// The page the main window should show. Settings is the default, matching
-    /// the sidebar's first item.
+    /// The page the main window should show. Settings is the default landing
+    /// page (Layout is still an empty placeholder), even though Layout is the
+    /// sidebar's first item.
     var selection: SidebarItem
 
     /// - Parameter selection: The initially selected page. Defaults to Settings.

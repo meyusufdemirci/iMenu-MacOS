@@ -31,6 +31,7 @@ struct LocalizationTests {
     @Test func sidebarAndSettingsStringsResolveToNonEmptyValues() {
         #expect(L10n.App.name.isEmpty == false)
         #expect(L10n.Sidebar.settings.isEmpty == false)
+        #expect(L10n.Sidebar.layout.isEmpty == false)
         #expect(L10n.Sidebar.about.isEmpty == false)
         #expect(L10n.Settings.generalSection.isEmpty == false)
         #expect(L10n.Settings.launchAtLogin.isEmpty == false)
