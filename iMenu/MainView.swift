@@ -50,6 +50,8 @@ struct MainView: View {
             SettingsView(settings: settings)
         case .layout:
             LayoutView(store: layoutStore)
+        case .permissions:
+            PermissionsView()
         case .about:
             AboutView()
         }

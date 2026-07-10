@@ -37,6 +37,12 @@ enum L10n {
                    comment: "Side menu label for the Layout page")
         }
 
+        static var permissions: String {
+            String(localized: "sidebar.permissions",
+                   defaultValue: "Permissions",
+                   comment: "Side menu label for the Permissions page")
+        }
+
         static var about: String {
             String(localized: "sidebar.about",
                    defaultValue: "About",

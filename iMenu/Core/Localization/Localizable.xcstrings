@@ -601,6 +601,18 @@
         }
       }
     },
+    "sidebar.permissions" : {
+      "comment" : "Side menu label for the Permissions page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permissions"
+          }
+        }
+      }
+    },
     "sidebar.settings" : {
       "comment" : "Side menu label for the Settings page",
       "extractionState" : "manual",
