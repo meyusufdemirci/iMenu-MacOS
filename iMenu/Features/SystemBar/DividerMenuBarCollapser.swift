@@ -39,6 +39,14 @@ final class DividerMenuBarCollapser: NSObject, SystemMenuBarCollapsing {
 
     private(set) var isCollapsed = false
 
+    /// The divider's current on-screen frame, or `nil` before it's installed. Used as
+    /// the anchor `MenuBarItemPlacer` drops items just to the left of (only its `minX`
+    /// is read, which is identical in Cocoa and global display space). Valid only while
+    /// the divider is at its natural width — a collapsed divider is expanded off-screen.
+    var dividerScreenFrame: CGRect? {
+        statusItem?.button?.window?.frame
+    }
+
     /// Eagerly creates the visible divider and wires click-to-toggle. Call once at
     /// startup so the user can find it, ⌘-drag icons to its left, and click it to
     /// exercise the collapse primitive.

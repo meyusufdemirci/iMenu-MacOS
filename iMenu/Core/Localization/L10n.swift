@@ -82,6 +82,15 @@ enum L10n {
                    defaultValue: "Toggle Hidden Zone (debug)",
                    comment: "Debug menu item that collapses/expands iMenu's menu bar divider to test the hide mechanic")
         }
+
+        /// DEBUG (milestones 0.5): exercises the synthesized ⌘-drag by auto-parking
+        /// the rightmost item past iMenu's divider on real hardware. Removed once
+        /// per-item auto-placement is proven.
+        static var autoParkItemDebug: String {
+            String(localized: "menubar.autoParkItemDebug",
+                   defaultValue: "Auto-Park Rightmost Item (debug)",
+                   comment: "Debug menu item that synthesizes a ⌘-drag to move the rightmost menu bar item past iMenu's divider")
+        }
     }
 
     enum Settings {
@@ -462,6 +471,12 @@ enum L10n {
             String(localized: "error.menuBarItemActivationFailed",
                    defaultValue: "iMenu couldn’t open that menu bar item.",
                    comment: "Description for AppError.menuBarItemActivationFailed")
+        }
+
+        static var menuBarItemPlacementFailed: String {
+            String(localized: "error.menuBarItemPlacementFailed",
+                   defaultValue: "iMenu couldn’t move that menu bar item.",
+                   comment: "Description for AppError.menuBarItemPlacementFailed")
         }
 
         static var recoveryGeneric: String {

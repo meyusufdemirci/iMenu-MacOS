@@ -26,6 +26,15 @@ struct MenuBarContent: View {
     /// once the mechanic is proven.
     let collapser: DividerMenuBarCollapser
 
+    /// DEBUG (milestones 0.5): auto-places a chosen item past the divider via a
+    /// synthesized ⌘-drag, exposed here to exercise per-item hiding on real hardware.
+    /// Removed once the drag mechanic is proven.
+    let placer: MenuBarItemPlacer
+
+    /// DEBUG (milestones 0.5): the loaded items, so the auto-park trigger has real
+    /// candidate ids to hand the placer.
+    let layoutStore: LayoutStore
+
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -38,6 +47,13 @@ struct MenuBarContent: View {
         // DEBUG (milestones 0.5): exercise the divider-collapse primitive by hand.
         Button(L10n.MenuBar.toggleHiddenZoneDebug) {
             collapser.setCollapsed(!collapser.isCollapsed)
+        }
+
+        // DEBUG (milestones 0.5): exercise the synthesized ⌘-drag by auto-parking the
+        // rightmost item past the divider. Keep the divider expanded (uncollapsed)
+        // first — a collapsed divider has no on-screen drop point.
+        Button(L10n.MenuBar.autoParkItemDebug) {
+            placer.debugParkRightmostItem(among: layoutStore.visibleItems.map(\.id))
         }
 
         Divider()

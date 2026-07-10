@@ -35,6 +35,11 @@ struct iMenuApp: App {
     /// the hide primitive is validated on device.
     @State private var collapser: DividerMenuBarCollapser
 
+    /// Auto-places a chosen item past the divider via a synthesized ⌘-drag (per-item
+    /// hiding, milestones 0.5 path (a)). Held here so the menu bar can trigger it while
+    /// the drag primitive is validated on device.
+    @State private var placer: MenuBarItemPlacer
+
     init() {
         // Land on Permissions at launch when any required permission is still
         // missing, so the user is taken straight to granting it; otherwise Layout.
@@ -51,6 +56,13 @@ struct iMenuApp: App {
             activator: menuBarProvider,
             collapser: collapser
         )
+        // The placer reuses the same provider (it retains the live AX elements) to
+        // locate an item, drops it just left of the divider, and drags it there.
+        let placer = MenuBarItemPlacer(
+            locator: menuBarProvider,
+            relocator: SynthesizedMenuBarItemRelocator(),
+            dividerFrame: { collapser.dividerScreenFrame }
+        )
 
         _permissionsStore = State(initialValue: permissionsStore)
         _settings = State(initialValue: settings)
@@ -60,6 +72,7 @@ struct iMenuApp: App {
         ))
         _secondRow = State(initialValue: SecondRowController(store: layoutStore, settings: settings))
         _collapser = State(initialValue: collapser)
+        _placer = State(initialValue: placer)
     }
 
     var body: some Scene {
@@ -79,7 +92,7 @@ struct iMenuApp: App {
         // The menu bar control: a persistent icon whose menu opens/routes the
         // window and can quit the app.
         MenuBarExtra(L10n.App.name, systemImage: "menubar.rectangle") {
-            MenuBarContent(navigation: navigation, collapser: collapser)
+            MenuBarContent(navigation: navigation, collapser: collapser, placer: placer, layoutStore: layoutStore)
         }
         .menuBarExtraStyle(.menu)
     }

@@ -38,6 +38,11 @@ enum AppError: LocalizedError, Equatable {
     /// is gone, went stale, or doesn't respond to being pressed.
     case menuBarItemActivationFailed
 
+    /// Auto-placing a menu bar item (the synthesized ⌘-drag past iMenu's divider)
+    /// couldn't proceed — the item's position or the divider couldn't be read, or
+    /// the drag couldn't be posted.
+    case menuBarItemPlacementFailed
+
     var errorDescription: String? {
         switch self {
         case .unknown:
@@ -54,6 +59,8 @@ enum AppError: LocalizedError, Equatable {
             return L10n.Errors.permissionDenied
         case .menuBarItemActivationFailed:
             return L10n.Errors.menuBarItemActivationFailed
+        case .menuBarItemPlacementFailed:
+            return L10n.Errors.menuBarItemPlacementFailed
         }
     }
 

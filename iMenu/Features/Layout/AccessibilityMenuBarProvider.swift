@@ -32,7 +32,7 @@ import ApplicationServices
 /// even one clipped behind the notch, since `kAXPressAction` doesn't depend on the
 /// item being on screen. A reference type because that element registry is
 /// mutable state shared across a fetch and a later press.
-final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemActivating {
+final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemActivating, MenuBarItemLocating {
 
     /// The live elements from the most recent fetch, keyed by descriptor id, so a
     /// tapped tile can be pressed. Refreshed wholesale on every `fetchItems()`;
@@ -101,6 +101,18 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemAct
             throw AppError.menuBarItemActivationFailed
         }
         AppLogger.shared.info("Activated a menu bar item", category: .menuBar)
+    }
+
+    // MARK: - Locating
+
+    /// The live frame of the item with `id`, re-read from the `AXUIElement` retained
+    /// during the last fetch — so a synthesized ⌘-drag grabs the item where it sits
+    /// *now*, not where the Layout page last saw it (milestones 0.5 path (a)).
+    /// `nil` when the id is unknown (never fetched, or gone since) or its position
+    /// can't be read. Top-left-origin global coordinates, same as `CGEvent`.
+    func frame(of id: String) -> CGRect? {
+        guard let element = elements[id] else { return nil }
+        return copyFrame(of: element)
     }
 
     // MARK: - AX helpers

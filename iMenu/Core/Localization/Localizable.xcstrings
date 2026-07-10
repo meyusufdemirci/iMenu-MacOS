@@ -136,6 +136,18 @@
         }
       }
     },
+    "error.menuBarItemPlacementFailed" : {
+      "comment" : "Description for AppError.menuBarItemPlacementFailed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu couldn’t move that menu bar item."
+          }
+        }
+      }
+    },
     "error.permissionDenied" : {
       "comment" : "Description for AppError.permissionDenied",
       "extractionState" : "manual",
@@ -552,6 +564,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "About"
+          }
+        }
+      }
+    },
+    "menubar.autoParkItemDebug" : {
+      "comment" : "Debug menu item that synthesizes a ⌘-drag to move the rightmost menu bar item past iMenu's divider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto-Park Rightmost Item (debug)"
           }
         }
       }
