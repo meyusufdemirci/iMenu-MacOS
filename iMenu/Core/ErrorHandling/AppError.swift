@@ -34,6 +34,10 @@ enum AppError: LocalizedError, Equatable {
     /// The app lacks the permission required for an operation.
     case permissionDenied
 
+    /// Pressing a menu bar item through the Accessibility API failed — the item
+    /// is gone, went stale, or doesn't respond to being pressed.
+    case menuBarItemActivationFailed
+
     var errorDescription: String? {
         switch self {
         case .unknown:
@@ -48,6 +52,8 @@ enum AppError: LocalizedError, Equatable {
             return L10n.Errors.persistence(detail)
         case .permissionDenied:
             return L10n.Errors.permissionDenied
+        case .menuBarItemActivationFailed:
+            return L10n.Errors.menuBarItemActivationFailed
         }
     }
 

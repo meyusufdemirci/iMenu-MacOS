@@ -25,7 +25,19 @@ import ApplicationServices
 /// The Accessibility API exposes titles and positions but not the rendered status
 /// icon, so items carry their owning app's `bundleIdentifier` and the view draws
 /// the app's icon.
-struct AccessibilityMenuBarProvider: MenuBarLayoutProviding {
+///
+/// It also **activates** items on demand (`MenuBarItemActivating`, PRD FR3 / US2):
+/// each fetch retains the live `AXUIElement`s it read, keyed by the same id the
+/// descriptor carries, so a click on a second-row tile can press the real item —
+/// even one clipped behind the notch, since `kAXPressAction` doesn't depend on the
+/// item being on screen. A reference type because that element registry is
+/// mutable state shared across a fetch and a later press.
+final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemActivating {
+
+    /// The live elements from the most recent fetch, keyed by descriptor id, so a
+    /// tapped tile can be pressed. Refreshed wholesale on every `fetchItems()`;
+    /// handles for items that have since gone away simply fail to press.
+    private var elements: [String: AXUIElement] = [:]
 
     func fetchItems() throws -> [MenuBarItemDescriptor] {
         guard AXIsProcessTrusted() else {
@@ -34,6 +46,7 @@ struct AccessibilityMenuBarProvider: MenuBarLayoutProviding {
 
         let ownPID = ProcessInfo.processInfo.processIdentifier
         var positioned: [(item: MenuBarItemDescriptor, frame: CGRect)] = []
+        var freshElements: [String: AXUIElement] = [:]
 
         for app in NSWorkspace.shared.runningApplications {
             // Skip apps that can't own menu bar items, and iMenu itself.
@@ -62,12 +75,32 @@ struct AccessibilityMenuBarProvider: MenuBarLayoutProviding {
                     ),
                     frame
                 ))
+                freshElements[identity] = child
             }
         }
 
+        elements = freshElements
         let sorted = positioned.sorted { $0.frame.minX < $1.frame.minX }
         logClipDetection(frames: sorted.map(\.frame))
         return sorted.map(\.item)
+    }
+
+    /// Presses the menu bar item with `id` through the Accessibility API, opening
+    /// its menu at the real item's location. Uses `kAXPressAction`, which works
+    /// even when the item is clipped off-screen — the whole point of the second
+    /// row. Throws `AppError.menuBarItemActivationFailed` when the item is unknown
+    /// (never fetched, or gone since) or the press is rejected.
+    func activate(id: String) throws {
+        guard AXIsProcessTrusted() else {
+            throw AppError.permissionDenied
+        }
+        guard let element = elements[id] else {
+            throw AppError.menuBarItemActivationFailed
+        }
+        guard AXUIElementPerformAction(element, kAXPressAction as CFString) == .success else {
+            throw AppError.menuBarItemActivationFailed
+        }
+        AppLogger.shared.info("Activated a menu bar item", category: .menuBar)
     }
 
     // MARK: - AX helpers

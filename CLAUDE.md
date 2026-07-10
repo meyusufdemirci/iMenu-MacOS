@@ -48,13 +48,19 @@ spike set out to answer is now answered for the *render* half:
   system menu bar, right-aligned, live-driven by the shared `LayoutStore` — move
   an item to *Hidden* on the Layout page and the row updates immediately.
 
-> ⚠️ **The hard half of the bet is still open.** The row is **display-only**
-> today (`ignoresMouseEvents`). Forwarding a click on a second-row item to the
-> real menu bar extra (PRD **FR3 / US2**) is **not** done. Neither is validation
-> across the notch, multiple/external displays, Stage Manager, Spaces, and
-> full-screen, nor survival across macOS point releases. Assume the mechanic may
-> need re-fixing on each major macOS release — treat all of that as unproven
-> until exercised on real hardware.
+> ⚠️ **The hard half of the bet is coded but unproven on device.** Click-
+> forwarding (PRD **FR3 / US2**) is now **implemented**: the row takes mouse
+> events (`ignoresMouseEvents = false`, still a non-activating panel so focus
+> isn't stolen), each tile is a button, and a tap routes through
+> `LayoutStore.activate(id:)` to `AccessibilityMenuBarProvider`, which presses the
+> live `AXUIElement` it retained during the last fetch via `kAXPressAction` (works
+> even for items clipped off-screen). **What's unverified:** whether `AXPress`
+> actually opens every real item across third-party apps — some custom items may
+> not respond and may need a synthesized click fallback — plus validation across
+> the notch, multiple/external displays, Stage Manager, Spaces, and full-screen,
+> and survival across macOS point releases. Assume the mechanic may need
+> re-fixing on each major macOS release — treat all of that as unproven until
+> exercised on real hardware.
 
 - Because the render mechanic is proven, **real product engineering is underway
   (Milestone 1)** and the **Working conventions** below are **in force** — the

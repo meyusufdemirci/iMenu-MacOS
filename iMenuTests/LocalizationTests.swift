@@ -40,6 +40,11 @@ struct LocalizationTests {
         #expect(L10n.Settings.showSecondRowDetail.isEmpty == false)
     }
 
+    @Test func secondRowAndActivationStringsResolveToNonEmptyValues() {
+        #expect(L10n.SecondRow.activateHint.isEmpty == false)
+        #expect(L10n.Errors.menuBarItemActivationFailed.isEmpty == false)
+    }
+
     @Test func aboutStringsResolveToNonEmptyValues() {
         #expect(L10n.About.author.isEmpty == false)
         #expect(L10n.About.role.isEmpty == false)

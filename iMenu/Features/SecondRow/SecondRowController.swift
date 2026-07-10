@@ -24,8 +24,10 @@ import Observation
 /// window is closed. The pure show/hide and geometry rules are unit tested; this
 /// glue, like `MenuBarContent`, is not.
 ///
-/// The row is display-only for now (`ignoresMouseEvents`): clicking an item to
-/// activate the real menu bar extra is a later, harder concern.
+/// The row is interactive: the panel takes mouse events (`ignoresMouseEvents =
+/// false`) so tapping a tile presses the real menu bar item (PRD FR3 / US2, routed
+/// through `LayoutStore.activate(id:)`). It stays a **non-activating** panel, so
+/// clicking the row never steals key focus from the app you're in.
 @MainActor
 final class SecondRowController {
 
@@ -130,7 +132,9 @@ final class SecondRowController {
         panel.hasShadow = false
         panel.isMovable = false
         panel.hidesOnDeactivate = false
-        panel.ignoresMouseEvents = true // display-only for now
+        // Take clicks so a tile can press its real menu bar item; the panel stays
+        // non-activating (styleMask above) so doing so doesn't steal key focus.
+        panel.ignoresMouseEvents = false
         panel.contentView = hostingView
 
         self.panel = panel

@@ -124,6 +124,18 @@
         }
       }
     },
+    "error.menuBarItemActivationFailed" : {
+      "comment" : "Description for AppError.menuBarItemActivationFailed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu couldn’t open that menu bar item."
+          }
+        }
+      }
+    },
     "error.permissionDenied" : {
       "comment" : "Description for AppError.permissionDenied",
       "extractionState" : "manual",
@@ -684,6 +696,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open iMenu automatically when you log in."
+          }
+        }
+      }
+    },
+    "secondRow.activateHint" : {
+      "comment" : "Accessibility hint on a second-row tile: clicking it opens the real menu bar item",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens this menu bar item."
           }
         }
       }

@@ -247,6 +247,14 @@ enum L10n {
         }
     }
 
+    enum SecondRow {
+        static var activateHint: String {
+            String(localized: "secondRow.activateHint",
+                   defaultValue: "Opens this menu bar item.",
+                   comment: "Accessibility hint on a second-row tile: clicking it opens the real menu bar item")
+        }
+    }
+
     enum Home {
         static var title: String {
             String(localized: "home.title",
@@ -402,6 +410,12 @@ enum L10n {
             String(localized: "error.permissionDenied",
                    defaultValue: "You don’t have permission to do that.",
                    comment: "Description for AppError.permissionDenied")
+        }
+
+        static var menuBarItemActivationFailed: String {
+            String(localized: "error.menuBarItemActivationFailed",
+                   defaultValue: "iMenu couldn’t open that menu bar item.",
+                   comment: "Description for AppError.menuBarItemActivationFailed")
         }
 
         static var recoveryGeneric: String {

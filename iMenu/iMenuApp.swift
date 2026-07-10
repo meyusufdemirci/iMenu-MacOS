@@ -35,7 +35,11 @@ struct iMenuApp: App {
         // missing, so the user is taken straight to granting it; otherwise Layout.
         let permissionsStore = PermissionsStore()
         let settings = SettingsStore()
-        let layoutStore = LayoutStore()
+        // One Accessibility provider serves as both reader and activator: it keeps
+        // the live elements it fetched, so a click on a second-row tile presses the
+        // very item it read.
+        let menuBarProvider = AccessibilityMenuBarProvider()
+        let layoutStore = LayoutStore(provider: menuBarProvider, activator: menuBarProvider)
 
         _permissionsStore = State(initialValue: permissionsStore)
         _settings = State(initialValue: settings)

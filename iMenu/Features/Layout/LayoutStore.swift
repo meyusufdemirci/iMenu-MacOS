@@ -56,15 +56,25 @@ final class LayoutStore {
     private(set) var state: LoadState = .idle
 
     @ObservationIgnored private let provider: MenuBarLayoutProviding
+    @ObservationIgnored private let activator: MenuBarItemActivating?
     @ObservationIgnored private let defaults: UserDefaults
 
     /// - Parameters:
     ///   - provider: Where items come from. Defaults to the real Accessibility
     ///     provider; previews use the sample provider and tests inject a stub.
+    ///   - activator: What opens the real item behind a second-row tile. `nil`
+    ///     (the default) makes `activate(id:)` a no-op — right for previews and
+    ///     sample data; the app injects the same Accessibility provider used to
+    ///     fetch, so it presses the very element it read.
     ///   - defaults: Where the chosen split/order is persisted. Defaults to
     ///     `.standard`; tests inject an isolated suite.
-    init(provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(), defaults: UserDefaults = .standard) {
+    init(
+        provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(),
+        activator: MenuBarItemActivating? = nil,
+        defaults: UserDefaults = .standard
+    ) {
         self.provider = provider
+        self.activator = activator
         self.defaults = defaults
     }
 
@@ -122,6 +132,24 @@ final class LayoutStore {
         append(dragged, to: section)
         persist()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
+    }
+
+    // MARK: - Activation
+
+    /// Opens the real menu bar item behind the second-row tile with `id` by
+    /// pressing it through the injected activator (PRD FR3 / US2). Best-effort:
+    /// with no activator (previews/sample) it's a no-op, and a press failure is
+    /// logged, never propagated — a stale or unpressable item just does nothing
+    /// rather than disrupting the row.
+    func activate(id: String) {
+        guard let activator else { return }
+        do {
+            try activator.activate(id: id)
+        } catch let error as AppError {
+            AppLogger.shared.error(error, category: .menuBar)
+        } catch {
+            AppLogger.shared.error(AppError.unexpected(String(describing: error)), category: .menuBar)
+        }
     }
 
     // MARK: - Persistence
