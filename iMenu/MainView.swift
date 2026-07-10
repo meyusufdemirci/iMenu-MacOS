@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MainView.swift
 //  iMenu
 //
 //  Created by Yusuf Demirci on 10.07.2026.
@@ -12,7 +12,7 @@ import SwiftUI
 /// Deliberately thin: it *composes* reusable components (`CardView`,
 /// `PrimaryButton`) and delegates strings to `L10n`, logging to `AppLogger`,
 /// and failures to `AppError`. This is the pattern to follow for new screens.
-struct ContentView: View {
+struct MainView: View {
     @State private var statusMessage = L10n.Home.ready
 
     var body: some View {
@@ -70,5 +70,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainView()
 }
