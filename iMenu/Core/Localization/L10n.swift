@@ -281,8 +281,8 @@ enum L10n {
 
         static var dividerTooltip: String {
             String(localized: "systemBar.divider.tooltip",
-                   defaultValue: "Drag menu bar items to the left of this to hide them in iMenu's second row.",
-                   comment: "Tooltip on iMenu's menu bar divider explaining how to park items in the hidden zone")
+                   defaultValue: "Click to show or hide iMenu's parked items. Drag menu bar items to the left of this arrow to park them.",
+                   comment: "Tooltip on iMenu's menu bar toggle explaining that clicking shows/hides parked items and items are parked by dragging them to its left")
         }
     }
 

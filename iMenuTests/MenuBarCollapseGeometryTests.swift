@@ -41,4 +41,33 @@ struct MenuBarCollapseGeometryTests {
         #expect(MenuBarCollapseGeometry.naturalLength > 0)
         #expect(MenuBarCollapseGeometry.naturalLength < 100)
     }
+
+    // MARK: - Two-item split (fixed toggle + invisible spacer)
+
+    @Test func theToggleKeepsAFixedWidthOpenOrCollapsed() {
+        // The fix for the vanishing arrow: the clickable toggle holds one fixed
+        // width in both states, so collapsing can never shove it off the bar. Only
+        // the spacer grows.
+        let open = MenuBarCollapseGeometry.lengths(collapsed: false, screenWidth: 1440)
+        let collapsed = MenuBarCollapseGeometry.lengths(collapsed: true, screenWidth: 1440)
+        #expect(open.toggle == collapsed.toggle)
+        #expect(open.toggle == MenuBarCollapseGeometry.naturalLength)
+    }
+
+    @Test func theOpenSpacerTakesNoSpace() {
+        // The spacer is invisible and reserves no room until it collapses the bar,
+        // so an open bar looks like nothing but the toggle glyph.
+        let open = MenuBarCollapseGeometry.lengths(collapsed: false, screenWidth: 1440)
+        #expect(open.spacer == MenuBarCollapseGeometry.spacerOpenLength)
+        #expect(MenuBarCollapseGeometry.spacerOpenLength == 0)
+    }
+
+    @Test func onlyTheSpacerGrowsToClearTheBar() {
+        // Collapsing grows the spacer past the whole screen (so every parked item to
+        // its left is pushed off) while the toggle stays put.
+        let collapsed = MenuBarCollapseGeometry.lengths(collapsed: true, screenWidth: 1440)
+        #expect(collapsed.spacer == MenuBarCollapseGeometry.expandedLength(screenWidth: 1440))
+        #expect(collapsed.spacer > 1440)
+        #expect(collapsed.toggle < collapsed.spacer)
+    }
 }

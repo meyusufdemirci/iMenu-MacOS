@@ -809,13 +809,13 @@
       }
     },
     "systemBar.divider.tooltip" : {
-      "comment" : "Tooltip on iMenu's menu bar divider explaining how to park items in the hidden zone",
+      "comment" : "Tooltip on iMenu's menu bar toggle explaining that clicking shows/hides parked items and items are parked by dragging them to its left",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag menu bar items to the left of this to hide them in iMenu's second row."
+            "value" : "Click to show or hide iMenu's parked items. Drag menu bar items to the left of this arrow to park them."
           }
         }
       }
