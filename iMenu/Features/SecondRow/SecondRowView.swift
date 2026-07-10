@@ -7,24 +7,25 @@
 
 import SwiftUI
 
-/// iMenu's persistent **second row**: the menu bar items rendered as a bar
-/// directly below the system menu bar, in the order set on the Layout page.
+/// iMenu's persistent **second row**: the **Hidden** menu bar items rendered as a
+/// bar directly below the system menu bar, in the order set on the Layout page.
 ///
 /// Presentation-only and deliberately thin. It reads the **shared** `LayoutStore`
-/// — the very instance the Layout page reorders — so dragging an item there
-/// re-renders this row immediately, because `LayoutStore` is `@Observable` and
-/// both views observe the same `items`. No extra syncing is needed.
+/// — the very instance the Layout page edits — so moving an item into (or out of)
+/// the Hidden section, or reordering it, re-renders this row immediately, because
+/// `LayoutStore` is `@Observable` and both views observe the same `hiddenItems`.
+/// No extra syncing is needed.
 ///
-/// It shows every fetched item for now; overflow-only detection and
-/// click-to-activate are separate, later concerns.
+/// It shows exactly the items the user has moved to Hidden; click-to-activate is a
+/// separate, later concern.
 struct SecondRowView: View {
 
-    /// The shared source of truth for the items and their order.
+    /// The shared source of truth for the hidden items and their order.
     let store: LayoutStore
 
     var body: some View {
         HStack(spacing: 6) {
-            ForEach(store.items) { item in
+            ForEach(store.hiddenItems) { item in
                 MenuBarItemChip(
                     title: item.displayTitle,
                     systemSymbolName: item.systemSymbolName,

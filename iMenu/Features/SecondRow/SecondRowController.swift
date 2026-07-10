@@ -13,10 +13,11 @@ import Observation
 ///
 /// A borderless, **non-activating** `NSPanel` hosts `SecondRowView`, floating just
 /// below the system menu bar. Because it hosts a view bound to the **shared**
-/// `LayoutStore`, reordering on the Layout page updates the row live — the store
-/// is `@Observable` and both surfaces read the same `items`. This controller's job
-/// is only the AppKit shell: create the panel, decide *whether* it should show
-/// (via `SecondRowPresentation`), and place it (via `SecondRowPlacement`).
+/// `LayoutStore`, moving items into/out of the Hidden section on the Layout page
+/// updates the row live — the store is `@Observable` and both surfaces read the
+/// same `hiddenItems`. This controller's job is only the AppKit shell: create the
+/// panel, decide *whether* it should show (via `SecondRowPresentation`), and place
+/// it (via `SecondRowPlacement`).
 ///
 /// It observes the store and settings itself (not through a SwiftUI view) so the
 /// row lives independently of the main window — it stays correct even while that
@@ -65,7 +66,7 @@ final class SecondRowController {
     private func observe() {
         withObservationTracking {
             _ = settings.showSecondRowAutomatically
-            _ = store.items
+            _ = store.hiddenItems
         } onChange: { [weak self] in
             Task { @MainActor in
                 guard let self else { return }
@@ -79,7 +80,7 @@ final class SecondRowController {
     private func apply() {
         let shouldShow = SecondRowPresentation.shouldShow(
             automaticEnabled: settings.showSecondRowAutomatically,
-            itemCount: store.items.count
+            itemCount: store.hiddenItems.count
         )
         if shouldShow {
             showAndPosition()
@@ -105,7 +106,7 @@ final class SecondRowController {
         )
         panel.setFrame(frame, display: true)
         panel.orderFrontRegardless()
-        AppLogger.shared.info("Second row shown with \(store.items.count) items", category: .menuBar)
+        AppLogger.shared.info("Second row shown with \(store.hiddenItems.count) items", category: .menuBar)
     }
 
     /// Lazily builds the panel + hosting view on first show.

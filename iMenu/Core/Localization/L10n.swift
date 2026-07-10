@@ -109,16 +109,46 @@ enum L10n {
     }
 
     enum Layout {
-        static var itemsSection: String {
-            String(localized: "layout.itemsSection",
-                   defaultValue: "Menu Bar Items",
-                   comment: "Header of the reorderable list on the Layout page")
+        static var visibleSection: String {
+            String(localized: "layout.section.visible",
+                   defaultValue: "Visible",
+                   comment: "Header of the section listing items that stay in the menu bar")
+        }
+
+        static var visibleSectionDetail: String {
+            String(localized: "layout.section.visible.detail",
+                   defaultValue: "These stay in your menu bar.",
+                   comment: "Explanation of the Visible section on the Layout page")
+        }
+
+        static var visibleEmpty: String {
+            String(localized: "layout.section.visible.empty",
+                   defaultValue: "Drag items here to keep them in the menu bar.",
+                   comment: "Placeholder shown when the Visible section has no items")
+        }
+
+        static var hiddenSection: String {
+            String(localized: "layout.section.hidden",
+                   defaultValue: "Hidden",
+                   comment: "Header of the section listing items surfaced in the second row")
+        }
+
+        static var hiddenSectionDetail: String {
+            String(localized: "layout.section.hidden.detail",
+                   defaultValue: "These move to the second row below your menu bar.",
+                   comment: "Explanation of the Hidden section on the Layout page")
+        }
+
+        static var hiddenEmpty: String {
+            String(localized: "layout.section.hidden.empty",
+                   defaultValue: "Drag items here to show them in the second row.",
+                   comment: "Placeholder shown when the Hidden section has no items")
         }
 
         static var reorderHint: String {
             String(localized: "layout.reorderHint",
-                   defaultValue: "Drag items to set the order iMenu uses for its second row.",
-                   comment: "Footer explaining what reordering does on the Layout page")
+                   defaultValue: "Drag items between Visible and Hidden, or within a section to reorder.",
+                   comment: "Footer explaining what dragging does on the Layout page")
         }
 
         static var sampleNotice: String {

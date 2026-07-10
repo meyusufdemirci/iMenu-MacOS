@@ -9,10 +9,13 @@ import Foundation
 import Testing
 @testable import iMenu
 
-/// `LayoutStore` fetches the menu bar items from an injected provider, exposes a
-/// load state the UI switches on, and persists the user's reordering to an
-/// injected `UserDefaults`. These tests drive it with a stub provider and a
-/// throwaway defaults domain, so they never touch Accessibility or `.standard`.
+/// `LayoutStore` fetches the menu bar items from an injected provider and splits
+/// them into two sections — **Visible** (stay in the menu bar) and **Hidden**
+/// (surfaced in iMenu's second row). It exposes a load state the UI switches on,
+/// lets items move within and between the sections, and persists both the section
+/// assignment and the order to an injected `UserDefaults`. These tests drive it
+/// with a stub provider and a throwaway defaults domain, so they never touch
+/// Accessibility or `.standard`.
 struct LayoutStoreTests {
 
     /// A provider whose result the test controls (success payload or failure).
@@ -37,17 +40,21 @@ struct LayoutStoreTests {
         LayoutStore(provider: StubProvider(result: .success(items)), defaults: defaults)
     }
 
+    // MARK: - Loading & partition
+
     @Test func startsIdleWithNoItems() {
         let store = store([], defaults: makeDefaults())
-        #expect(store.items.isEmpty)
+        #expect(store.visibleItems.isEmpty)
+        #expect(store.hiddenItems.isEmpty)
         #expect(store.state == .idle)
     }
 
-    @Test func loadPopulatesItemsFromProvider() {
+    @Test func loadPutsEveryItemInVisibleByDefault() {
         let items = [item("a"), item("b"), item("c")]
         let store = store(items, defaults: makeDefaults())
         store.load()
-        #expect(store.items == items)
+        #expect(store.visibleItems == items)
+        #expect(store.hiddenItems.isEmpty)
         #expect(store.state == .loaded)
     }
 
@@ -57,85 +64,111 @@ struct LayoutStoreTests {
             defaults: makeDefaults()
         )
         store.load()
-        #expect(store.items.isEmpty)
+        #expect(store.visibleItems.isEmpty)
+        #expect(store.hiddenItems.isEmpty)
         #expect(store.state == .failed(.permissionDenied))
     }
 
-    @Test func moveReordersItems() {
+    // MARK: - Moving between sections
+
+    @Test func moveToEndOfHiddenMovesItemAcrossSections() {
         let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
         store.load()
-        store.move(fromOffsets: IndexSet(integer: 0), toOffset: 3)
-        #expect(store.items.map(\.id) == ["b", "c", "a"])
+        store.move(id: "b", toEndOf: .hidden)
+        #expect(store.visibleItems.map(\.id) == ["a", "c"])
+        #expect(store.hiddenItems.map(\.id) == ["b"])
     }
 
-    @Test func reorderIsPersistedAcrossStores() {
-        let defaults = makeDefaults()
-        let items = [item("a"), item("b"), item("c")]
-
-        let first = store(items, defaults: defaults)
-        first.load()
-        first.move(fromOffsets: IndexSet(integer: 2), toOffset: 0) // c to front → [c, a, b]
-        #expect(first.items.map(\.id) == ["c", "a", "b"])
-
-        // A new store over the same domain must honor the saved order.
-        let reloaded = store(items, defaults: defaults)
-        reloaded.load()
-        #expect(reloaded.items.map(\.id) == ["c", "a", "b"])
+    @Test func moveBackToVisibleReturnsItemToTheMenuBarSection() {
+        let store = store([item("a"), item("b")], defaults: makeDefaults())
+        store.load()
+        store.move(id: "a", toEndOf: .hidden)   // visible: [b], hidden: [a]
+        store.move(id: "a", toEndOf: .visible)  // visible: [b, a], hidden: []
+        #expect(store.visibleItems.map(\.id) == ["b", "a"])
+        #expect(store.hiddenItems.isEmpty)
     }
 
-    @Test func moveByIDPlacesItemAtTargetPositionForward() {
+    @Test func moveToPositionCanCrossSectionsAndLandBeforeTarget() {
         let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
         store.load()
-        store.move(id: "a", toPositionOf: "c")
-        #expect(store.items.map(\.id) == ["b", "c", "a"])
+        store.move(id: "c", toEndOf: .hidden)   // visible: [a, b], hidden: [c]
+        store.move(id: "a", toPositionOf: "c")  // a lands before c in hidden
+        #expect(store.visibleItems.map(\.id) == ["b"])
+        #expect(store.hiddenItems.map(\.id) == ["a", "c"])
     }
 
-    @Test func moveByIDPlacesItemAtTargetPositionBackward() {
+    // MARK: - Reordering within a section
+
+    @Test func moveToPositionReordersWithinASectionBeforeTarget() {
         let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
         store.load()
-        store.move(id: "c", toPositionOf: "a")
-        #expect(store.items.map(\.id) == ["c", "a", "b"])
+        store.move(id: "a", toPositionOf: "c") // [a, b, c] → [b, a, c] (a before c)
+        #expect(store.visibleItems.map(\.id) == ["b", "a", "c"])
+        #expect(store.hiddenItems.isEmpty)
     }
 
-    @Test func moveByIDIsNoOpForSameItem() {
+    @Test func moveToPositionBackwardLandsBeforeTarget() {
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
+        store.load()
+        store.move(id: "c", toPositionOf: "a") // [a, b, c] → [c, a, b]
+        #expect(store.visibleItems.map(\.id) == ["c", "a", "b"])
+    }
+
+    @Test func moveToEndOfSameSectionReorders() {
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
+        store.load()
+        store.move(id: "a", toEndOf: .visible) // [a, b, c] → [b, c, a]
+        #expect(store.visibleItems.map(\.id) == ["b", "c", "a"])
+    }
+
+    // MARK: - No-ops
+
+    @Test func moveToPositionIsNoOpForSameItem() {
         let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults())
         store.load()
         store.move(id: "b", toPositionOf: "b")
-        #expect(store.items.map(\.id) == ["a", "b", "c"])
+        #expect(store.visibleItems.map(\.id) == ["a", "b", "c"])
     }
 
-    @Test func moveByIDIgnoresUnknownIdentifiers() {
+    @Test func moveIgnoresUnknownIdentifiers() {
         let store = store([item("a"), item("b")], defaults: makeDefaults())
         store.load()
         store.move(id: "zzz", toPositionOf: "a")
-        #expect(store.items.map(\.id) == ["a", "b"])
+        store.move(id: "zzz", toEndOf: .hidden)
+        #expect(store.visibleItems.map(\.id) == ["a", "b"])
+        #expect(store.hiddenItems.isEmpty)
     }
 
-    @Test func moveByIDIsPersisted() {
+    // MARK: - Persistence
+
+    @Test func sectionAssignmentAndOrderPersistAcrossStores() {
         let defaults = makeDefaults()
         let items = [item("a"), item("b"), item("c")]
 
         let first = store(items, defaults: defaults)
         first.load()
-        first.move(id: "c", toPositionOf: "a") // [c, a, b]
+        first.move(id: "b", toEndOf: .hidden)  // visible: [a, c], hidden: [b]
+        first.move(id: "c", toPositionOf: "a") // visible: [c, a], hidden: [b]
 
+        // A new store over the same domain must restore both the split and the order.
         let reloaded = store(items, defaults: defaults)
         reloaded.load()
-        #expect(reloaded.items.map(\.id) == ["c", "a", "b"])
+        #expect(reloaded.visibleItems.map(\.id) == ["c", "a"])
+        #expect(reloaded.hiddenItems.map(\.id) == ["b"])
     }
 
-    @Test func newItemsAppendAfterSavedOrder() {
+    @Test func newItemsDefaultToVisibleAfterSavedOrder() {
         let defaults = makeDefaults()
 
         let first = store([item("a"), item("b")], defaults: defaults)
         first.load()
-        first.move(fromOffsets: IndexSet(integer: 1), toOffset: 0) // [b, a]
-        #expect(first.items.map(\.id) == ["b", "a"])
+        first.move(id: "a", toEndOf: .hidden) // visible: [b], hidden: [a]
 
-        // A later fetch that surfaces a brand-new item keeps the saved order and
-        // appends the newcomer at the end.
+        // A later fetch that surfaces a brand-new item keeps the saved split and
+        // appends the newcomer to Visible.
         let second = store([item("a"), item("b"), item("c")], defaults: defaults)
         second.load()
-        #expect(second.items.map(\.id) == ["b", "a", "c"])
+        #expect(second.visibleItems.map(\.id) == ["b", "c"])
+        #expect(second.hiddenItems.map(\.id) == ["a"])
     }
 }

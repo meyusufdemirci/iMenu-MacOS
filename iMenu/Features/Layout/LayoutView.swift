@@ -9,11 +9,15 @@ import SwiftUI
 
 /// The Layout page of the side menu.
 ///
-/// Fetches the current menu bar items through its `LayoutStore` and shows them in
-/// a **horizontal row you can drag to reorder** — a preview of the menu bar, in
-/// the order iMenu uses for its second row. Kept thin: it switches on the store's
-/// load state and delegates the row to `ReorderableMenuBarRow`; the fetching,
-/// ordering, and persistence live in the store.
+/// Fetches the current menu bar items through its `LayoutStore` and splits them
+/// into two sections you can **drag between**:
+///
+/// - **Visible** — items that stay in the system menu bar.
+/// - **Hidden** — items iMenu surfaces in its second row below the menu bar.
+///
+/// Kept thin: it switches on the store's load state and delegates each section to
+/// a `LayoutSectionView`, wiring the drops to the store's move actions; the
+/// fetching, splitting, ordering, and persistence live in the store.
 struct LayoutView: View {
 
     /// The source of truth for the page's items, state, and reordering.
@@ -54,7 +58,7 @@ struct LayoutView: View {
             errorView(error)
 
         case .loaded:
-            if store.items.isEmpty {
+            if store.visibleItems.isEmpty && store.hiddenItems.isEmpty {
                 ContentUnavailableView(
                     L10n.Layout.emptyTitle,
                     systemImage: "menubar.rectangle",
@@ -66,30 +70,39 @@ struct LayoutView: View {
         }
     }
 
-    /// The section title, the horizontal reorderable row, and the explanatory
-    /// footnotes, laid out top-to-bottom.
+    /// The two drag-between sections and the explanatory footnotes, stacked and
+    /// scrollable so both fit on smaller windows.
     private var loadedContent: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(L10n.Layout.itemsSection)
-                .font(.headline)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                LayoutSectionView(
+                    title: L10n.Layout.visibleSection,
+                    subtitle: L10n.Layout.visibleSectionDetail,
+                    items: store.visibleItems,
+                    emptyPrompt: L10n.Layout.visibleEmpty,
+                    onDropOnItem: { store.move(id: $0, toPositionOf: $1) },
+                    onDropAtEnd: { store.move(id: $0, toEndOf: .visible) }
+                )
 
-            ReorderableMenuBarRow(items: store.items) { draggedID, targetID in
-                store.move(id: draggedID, toPositionOf: targetID)
+                LayoutSectionView(
+                    title: L10n.Layout.hiddenSection,
+                    subtitle: L10n.Layout.hiddenSectionDetail,
+                    items: store.hiddenItems,
+                    emptyPrompt: L10n.Layout.hiddenEmpty,
+                    onDropOnItem: { store.move(id: $0, toPositionOf: $1) },
+                    onDropAtEnd: { store.move(id: $0, toEndOf: .hidden) }
+                )
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(L10n.Layout.reorderHint)
+                    Text(L10n.Layout.sampleNotice)
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(L10n.Layout.reorderHint)
-                Text(L10n.Layout.sampleNotice)
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
-            Spacer(minLength: 0)
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     /// A failure state with the localized reason and a retry action.

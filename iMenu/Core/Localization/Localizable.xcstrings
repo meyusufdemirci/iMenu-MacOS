@@ -1,89 +1,8 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "permissions.accessibility.detail" : {
-      "comment" : "Explanation of why iMenu needs Accessibility permission",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lets iMenu read the menu bar items of other apps."
-          }
-        }
-      }
-    },
-    "permissions.accessibility.footer" : {
-      "comment" : "Reassurance about how the Accessibility permission is used",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu uses this only to read your menu bar layout — it never controls other apps."
-          }
-        }
-      }
-    },
-    "permissions.accessibility.section" : {
-      "comment" : "Header for the Accessibility section of the Permissions page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accessibility"
-          }
-        }
-      }
-    },
-    "permissions.accessibility.title" : {
-      "comment" : "Title of the Accessibility permission row",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accessibility"
-          }
-        }
-      }
-    },
-    "permissions.openSystemSettings" : {
-      "comment" : "Button that opens System Settings to grant a permission",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open System Settings"
-          }
-        }
-      }
-    },
-    "permissions.status.granted" : {
-      "comment" : "Status badge shown when a permission is granted",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Granted"
-          }
-        }
-      }
-    },
-    "permissions.status.notGranted" : {
-      "comment" : "Status badge shown when a permission has not been granted",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not granted"
-          }
-        }
-      }
+    "%lld" : {
+
     },
     "about.author" : {
       "comment" : "Name of the app's author, shown on the About page",
@@ -373,18 +292,6 @@
         }
       }
     },
-    "layout.itemsSection" : {
-      "comment" : "Header of the reorderable list on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Menu Bar Items"
-          }
-        }
-      }
-    },
     "layout.loading" : {
       "comment" : "Progress label shown while the Layout page loads items",
       "extractionState" : "manual",
@@ -410,13 +317,13 @@
       }
     },
     "layout.reorderHint" : {
-      "comment" : "Footer explaining what reordering does on the Layout page",
+      "comment" : "Footer explaining what dragging does on the Layout page",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag items to set the order iMenu uses for its second row."
+            "value" : "Drag items between Visible and Hidden, or within a section to reorder."
           }
         }
       }
@@ -553,6 +460,78 @@
         }
       }
     },
+    "layout.section.hidden" : {
+      "comment" : "Header of the section listing items surfaced in the second row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hidden"
+          }
+        }
+      }
+    },
+    "layout.section.hidden.detail" : {
+      "comment" : "Explanation of the Hidden section on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These move to the second row below your menu bar."
+          }
+        }
+      }
+    },
+    "layout.section.hidden.empty" : {
+      "comment" : "Placeholder shown when the Hidden section has no items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag items here to show them in the second row."
+          }
+        }
+      }
+    },
+    "layout.section.visible" : {
+      "comment" : "Header of the section listing items that stay in the menu bar",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visible"
+          }
+        }
+      }
+    },
+    "layout.section.visible.detail" : {
+      "comment" : "Explanation of the Visible section on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These stay in your menu bar."
+          }
+        }
+      }
+    },
+    "layout.section.visible.empty" : {
+      "comment" : "Placeholder shown when the Visible section has no items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag items here to keep them in the menu bar."
+          }
+        }
+      }
+    },
     "menubar.about" : {
       "comment" : "Menu bar item that opens the main window on the About page",
       "extractionState" : "manual",
@@ -597,6 +576,90 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "permissions.accessibility.detail" : {
+      "comment" : "Explanation of why iMenu needs Accessibility permission",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lets iMenu read the menu bar items of other apps."
+          }
+        }
+      }
+    },
+    "permissions.accessibility.footer" : {
+      "comment" : "Reassurance about how the Accessibility permission is used",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu uses this only to read your menu bar layout — it never controls other apps."
+          }
+        }
+      }
+    },
+    "permissions.accessibility.section" : {
+      "comment" : "Header for the Accessibility section of the Permissions page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessibility"
+          }
+        }
+      }
+    },
+    "permissions.accessibility.title" : {
+      "comment" : "Title of the Accessibility permission row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessibility"
+          }
+        }
+      }
+    },
+    "permissions.openSystemSettings" : {
+      "comment" : "Button that opens System Settings to grant a permission",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open System Settings"
+          }
+        }
+      }
+    },
+    "permissions.status.granted" : {
+      "comment" : "Status badge shown when a permission is granted",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Granted"
+          }
+        }
+      }
+    },
+    "permissions.status.notGranted" : {
+      "comment" : "Status badge shown when a permission has not been granted",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not granted"
           }
         }
       }
