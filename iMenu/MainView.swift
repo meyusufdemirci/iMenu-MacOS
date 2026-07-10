@@ -10,7 +10,7 @@ import SwiftUI
 /// The main window.
 ///
 /// A `NavigationSplitView` whose sidebar is the app's **side menu** (driven by
-/// `SidebarItem`) and whose detail shows the selected page. Settings is the
+/// `SidebarItem`) and whose detail shows the selected page. Layout is the
 /// first item and the default selection. Kept thin: it binds to the shared
 /// `AppNavigation` and `SettingsStore` (owned by the app so they persist across
 /// the window closing and stay in sync with the menu bar), drives selection,
@@ -22,6 +22,9 @@ struct MainView: View {
 
     /// Shared user preferences.
     let settings: SettingsStore
+
+    /// Shared Layout state (menu bar items and their order).
+    let layoutStore: LayoutStore
 
     var body: some View {
         NavigationSplitView {
@@ -46,7 +49,7 @@ struct MainView: View {
         case .settings:
             SettingsView(settings: settings)
         case .layout:
-            LayoutView()
+            LayoutView(store: layoutStore)
         case .about:
             AboutView()
         }
@@ -54,5 +57,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView(navigation: AppNavigation(), settings: SettingsStore())
+    MainView(navigation: AppNavigation(), settings: SettingsStore(), layoutStore: LayoutStore())
 }

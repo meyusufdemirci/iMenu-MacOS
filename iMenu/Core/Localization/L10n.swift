@@ -102,6 +102,115 @@ enum L10n {
         }
     }
 
+    enum Layout {
+        static var itemsSection: String {
+            String(localized: "layout.itemsSection",
+                   defaultValue: "Menu Bar Items",
+                   comment: "Header of the reorderable list on the Layout page")
+        }
+
+        static var reorderHint: String {
+            String(localized: "layout.reorderHint",
+                   defaultValue: "Drag items to set the order iMenu uses for its second row.",
+                   comment: "Footer explaining what reordering does on the Layout page")
+        }
+
+        static var sampleNotice: String {
+            String(localized: "layout.sampleNotice",
+                   defaultValue: "These are sample items — live menu bar detection is coming soon.",
+                   comment: "Footer note that the Layout list currently shows placeholder data")
+        }
+
+        static var loading: String {
+            String(localized: "layout.loading",
+                   defaultValue: "Reading your menu bar…",
+                   comment: "Progress label shown while the Layout page loads items")
+        }
+
+        static var refresh: String {
+            String(localized: "layout.refresh",
+                   defaultValue: "Refresh",
+                   comment: "Toolbar button that re-fetches the menu bar items")
+        }
+
+        static var retry: String {
+            String(localized: "layout.retry",
+                   defaultValue: "Try Again",
+                   comment: "Button that retries loading after a failure on the Layout page")
+        }
+
+        static var emptyTitle: String {
+            String(localized: "layout.empty.title",
+                   defaultValue: "No menu bar items",
+                   comment: "Title of the empty state on the Layout page")
+        }
+
+        static var emptyDescription: String {
+            String(localized: "layout.empty.description",
+                   defaultValue: "iMenu didn’t find any menu bar items to arrange.",
+                   comment: "Description of the empty state on the Layout page")
+        }
+
+        /// Display names for the placeholder items shown until live detection
+        /// exists. Localized like all user-facing strings even though the data
+        /// is temporary.
+        enum Sample {
+            static var system: String {
+                String(localized: "layout.sample.system",
+                       defaultValue: "System",
+                       comment: "Owning-app label for system-owned sample menu bar items")
+            }
+
+            static var spotlight: String {
+                String(localized: "layout.sample.spotlight",
+                       defaultValue: "Spotlight",
+                       comment: "Sample menu bar item: Spotlight search")
+            }
+
+            static var controlCenter: String {
+                String(localized: "layout.sample.controlCenter",
+                       defaultValue: "Control Center",
+                       comment: "Sample menu bar item: Control Center")
+            }
+
+            static var wifi: String {
+                String(localized: "layout.sample.wifi",
+                       defaultValue: "Wi-Fi",
+                       comment: "Sample menu bar item: Wi-Fi status")
+            }
+
+            static var sound: String {
+                String(localized: "layout.sample.sound",
+                       defaultValue: "Sound",
+                       comment: "Sample menu bar item: sound/volume")
+            }
+
+            static var battery: String {
+                String(localized: "layout.sample.battery",
+                       defaultValue: "Battery",
+                       comment: "Sample menu bar item: battery status")
+            }
+
+            static var focus: String {
+                String(localized: "layout.sample.focus",
+                       defaultValue: "Focus",
+                       comment: "Sample menu bar item: Focus / Do Not Disturb")
+            }
+
+            static var keyboard: String {
+                String(localized: "layout.sample.keyboard",
+                       defaultValue: "Keyboard",
+                       comment: "Sample menu bar item: keyboard / input source")
+            }
+
+            static var clock: String {
+                String(localized: "layout.sample.clock",
+                       defaultValue: "Clock",
+                       comment: "Sample menu bar item: the menu bar clock")
+            }
+        }
+    }
+
     enum Home {
         static var title: String {
             String(localized: "home.title",

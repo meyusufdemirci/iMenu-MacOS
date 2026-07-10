@@ -10,11 +10,11 @@ import Testing
 
 /// `AppNavigation` is the shared source of truth for which page the main window
 /// shows. The menu bar routes through it, so these tests pin the contract the
-/// UI relies on: it defaults to Settings and `show(_:)` moves the selection.
+/// UI relies on: it defaults to Layout and `show(_:)` moves the selection.
 struct AppNavigationTests {
 
-    @Test func defaultsToSettings() {
-        #expect(AppNavigation().selection == .settings)
+    @Test func defaultsToLayout() {
+        #expect(AppNavigation().selection == .layout)
     }
 
     @Test func showRoutesToTheRequestedPage() {

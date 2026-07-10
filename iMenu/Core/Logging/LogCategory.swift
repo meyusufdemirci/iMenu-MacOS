@@ -17,4 +17,5 @@ enum LogCategory: String {
     case network
     case persistence
     case lifecycle
+    case menuBar
 }

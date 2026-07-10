@@ -17,11 +17,15 @@ struct iMenuApp: App {
     /// Shared user preferences, owned here for the same reason.
     @State private var settings = SettingsStore()
 
+    /// Shared Layout state (fetched menu bar items and their order), owned here so
+    /// the loaded items survive the window closing and reopening.
+    @State private var layoutStore = LayoutStore()
+
     var body: some Scene {
         // A single main window (not a group) so the menu bar reopens and focuses
         // the one window instead of spawning duplicates.
         Window(L10n.App.name, id: WindowID.main) {
-            MainView(navigation: navigation, settings: settings)
+            MainView(navigation: navigation, settings: settings, layoutStore: layoutStore)
         }
 
         // The menu bar control: a persistent icon whose menu opens/routes the

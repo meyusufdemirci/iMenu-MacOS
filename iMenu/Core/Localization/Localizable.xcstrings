@@ -265,6 +265,210 @@
         }
       }
     },
+    "layout.empty.description" : {
+      "comment" : "Description of the empty state on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iMenu didn’t find any menu bar items to arrange."
+          }
+        }
+      }
+    },
+    "layout.empty.title" : {
+      "comment" : "Title of the empty state on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No menu bar items"
+          }
+        }
+      }
+    },
+    "layout.itemsSection" : {
+      "comment" : "Header of the reorderable list on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu Bar Items"
+          }
+        }
+      }
+    },
+    "layout.loading" : {
+      "comment" : "Progress label shown while the Layout page loads items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading your menu bar…"
+          }
+        }
+      }
+    },
+    "layout.refresh" : {
+      "comment" : "Toolbar button that re-fetches the menu bar items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "layout.reorderHint" : {
+      "comment" : "Footer explaining what reordering does on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag items to set the order iMenu uses for its second row."
+          }
+        }
+      }
+    },
+    "layout.retry" : {
+      "comment" : "Button that retries loading after a failure on the Layout page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "layout.sample.battery" : {
+      "comment" : "Sample menu bar item: battery status",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery"
+          }
+        }
+      }
+    },
+    "layout.sample.clock" : {
+      "comment" : "Sample menu bar item: the menu bar clock",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clock"
+          }
+        }
+      }
+    },
+    "layout.sample.controlCenter" : {
+      "comment" : "Sample menu bar item: Control Center",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control Center"
+          }
+        }
+      }
+    },
+    "layout.sample.focus" : {
+      "comment" : "Sample menu bar item: Focus / Do Not Disturb",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus"
+          }
+        }
+      }
+    },
+    "layout.sample.keyboard" : {
+      "comment" : "Sample menu bar item: keyboard / input source",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard"
+          }
+        }
+      }
+    },
+    "layout.sample.sound" : {
+      "comment" : "Sample menu bar item: sound/volume",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sound"
+          }
+        }
+      }
+    },
+    "layout.sample.spotlight" : {
+      "comment" : "Sample menu bar item: Spotlight search",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight"
+          }
+        }
+      }
+    },
+    "layout.sample.system" : {
+      "comment" : "Owning-app label for system-owned sample menu bar items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        }
+      }
+    },
+    "layout.sample.wifi" : {
+      "comment" : "Sample menu bar item: Wi-Fi status",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi"
+          }
+        }
+      }
+    },
+    "layout.sampleNotice" : {
+      "comment" : "Footer note that the Layout list currently shows placeholder data",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "These are sample items — live menu bar detection is coming soon."
+          }
+        }
+      }
+    },
     "menubar.about" : {
       "comment" : "Menu bar item that opens the main window on the About page",
       "extractionState" : "manual",
