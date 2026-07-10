@@ -19,6 +19,7 @@ for it.
 | UI | SwiftUI, native |
 | Language | Swift (language mode 5.0; toolchain Swift 6.3 / Xcode 26.6) |
 | Bundle ID | `com.nefarius.iMenu` |
+| Runtime | **Un-sandboxed** (`ENABLE_APP_SANDBOX = NO`); needs **Accessibility** permission to read other apps' menu bar items |
 | License / model | Free & open source; no paid tier, accounts, or telemetry |
 | Distribution | Notarized direct download — **no Mac App Store** (sandbox forbids the required APIs) |
 | Unit tests | **Swift Testing** (`import Testing`, `@Test`, `#expect`) |
@@ -30,24 +31,43 @@ positioning, user stories, milestones); the essentials for working in this repo
 are below. **Keep this file consistent with those docs** — if they change, update
 here.
 
-### Current status — gated on a feasibility spike
+### Current status — render mechanic proven; click-forwarding still open
 
-> ⚠️ **The product is pre-validation.** The entire product rests on **one
-> unproven technical bet**: can we reliably render a persistent, clickable second
-> row of *other apps'* clipped menu bar items — using permitted APIs — across the
-> notch, multiple displays, Stage Manager, Spaces, and full-screen, and keep it
-> working across macOS updates? Those items belong to other processes; we cannot
-> re-parent them.
+The core bet has moved from "unproven" to "partly proven in code." What the
+spike set out to answer is now answered for the *render* half:
 
-- **Milestone 0 (Feasibility Spike) is BLOCKING.** Until it proves a live,
-  clickable second row on a real Mac (notch machine + external display) and
-  documents which permission it forces (spacing manipulation vs. Accessibility
-  vs. Screen Recording), do **not** invest in real product engineering.
-- The spike is **throwaway**: **no** TDD, components, localization, or branding.
-  Its only job is to answer "does the mechanic work, and what does it cost?"
-- The **Working conventions** below apply to real product code (Milestone 1+),
-  *after* the spike passes — not to spike code.
-- If the spike fails, **stop** — the product doesn't exist in this form.
+- **Reading other apps' items works.** `AccessibilityMenuBarProvider`
+  enumerates every running app's `AXExtrasMenuBar` through the Accessibility
+  API, reads each item's title and on-screen x-position, and returns them
+  ordered left-to-right. **This is the chosen mechanism** (of the three the PRD
+  weighed — spacing manipulation / Accessibility / Screen Recording). Its
+  **permission cost**: the app must run **un-sandboxed** and the user must grant
+  **Accessibility** — that's the answer the spike was gating on.
+- **Rendering a persistent second row works.** `SecondRowController` hosts a
+  borderless, non-activating `NSPanel` (`SecondRowView`) pinned just below the
+  system menu bar, right-aligned, live-driven by the shared `LayoutStore` — move
+  an item to *Hidden* on the Layout page and the row updates immediately.
+
+> ⚠️ **The hard half of the bet is still open.** The row is **display-only**
+> today (`ignoresMouseEvents`). Forwarding a click on a second-row item to the
+> real menu bar extra (PRD **FR3 / US2**) is **not** done. Neither is validation
+> across the notch, multiple/external displays, Stage Manager, Spaces, and
+> full-screen, nor survival across macOS point releases. Assume the mechanic may
+> need re-fixing on each major macOS release — treat all of that as unproven
+> until exercised on real hardware.
+
+- Because the render mechanic is proven, **real product engineering is underway
+  (Milestone 1)** and the **Working conventions** below are **in force** — the
+  code already follows them (TDD, components, `L10n`, `AppError`, `AppLogger`).
+  The throwaway-spike exemption no longer applies.
+- Note: the app does **not** try to detect the OS's clip point (PRD FR1). It
+  reads *all* extras items and lets the user choose which go to the second row
+  (a Visible/Hidden split), rather than auto-detecting overflow.
+
+> **Docs to reconcile:** `Documents/prd.md` and `Documents/one-pager.md` still
+> carry the original "gated on feasibility spike / do not build product
+> engineering" framing. Update them when you next touch the product docs so they
+> match this state.
 
 ### Non-goals (v1)
 
@@ -93,36 +113,60 @@ xcodebuild -list -project iMenu.xcodeproj
 
 ```
 iMenu/
-  iMenuApp.swift            # @main entry point
-  MainView.swift            # Root window: side-menu split view (keep it thin)
+  iMenuApp.swift              # @main: owns shared state, defines the Window + MenuBarExtra
+  MainView.swift              # Root window: NavigationSplitView side menu (keep it thin)
   Navigation/
-    SidebarItem.swift       # The side-menu pages (Settings first)
-  Features/                 # One folder per screen/feature
+    SidebarItem.swift         # The side-menu pages (Layout, Permissions, Settings, About)
+    AppNavigation.swift       # @Observable selected-page state, shared by window + menu bar
+    WindowID.swift            # Stable id for the single main window
+  Features/                   # One folder per screen/feature
+    Layout/
+      LayoutView.swift              # Layout page: Visible/Hidden drag-between sections
+      LayoutStore.swift             # @Observable; fetches items, splits + orders, persists
+      MenuBarItemDescriptor.swift   # Value type: one menu bar item as plain data
+      MenuBarLayoutProviding.swift  # Provider protocol + SampleMenuBarLayoutProvider
+      AccessibilityMenuBarProvider.swift  # Real provider: reads other apps' AXExtrasMenuBar
+      ReorderableMenuBarRow.swift   # Drag-and-drop row for one section
+    SecondRow/
+      SecondRowController.swift     # Owns the NSPanel; observes store/settings (AppKit glue)
+      SecondRowView.swift           # The row's SwiftUI content (the Hidden items)
+      SecondRowPresentation.swift   # Pure show/hide rule (unit tested)
+      SecondRowPlacement.swift      # Pure panel geometry below the menu bar (unit tested)
+    Permissions/
+      PermissionsView.swift         # Permissions page (Accessibility status + grant)
+      PermissionsStore.swift        # @Observable permission state
+      AccessibilityAuthorizing.swift  # Authorizer protocol + system-backed impl
+    MenuBar/
+      MenuBarContent.swift          # The MenuBarExtra menu (Open / Settings / About / Quit)
     Settings/
-      SettingsStore.swift   # @Observable, UserDefaults-backed preferences
-      SettingsView.swift    # Settings page — composes components
+      SettingsStore.swift           # @Observable, UserDefaults-backed preferences
+      SettingsView.swift            # Settings page — composes components
     About/
-      SocialLink.swift      # Value type: the author's external profile links
-      AboutView.swift       # About page — author, links, free-to-use note
-  Components/               # Reusable, self-contained SwiftUI views
+      SocialLink.swift              # Value type: the author's external profile links
+      AboutView.swift               # About page — author, links, free-to-use note
+  Components/                 # Reusable, self-contained SwiftUI views
     CardView.swift
     PrimaryButton.swift
     SettingToggleRow.swift
-  Core/                     # App-wide infrastructure (no UI)
+    SocialLinkButton.swift          # Bordered button that opens an external link
+    MenuBarItemChip.swift           # Icon-only tile for one menu bar item
+    LayoutSectionView.swift         # A titled Layout section wrapping ReorderableMenuBarRow
+    PermissionStatusRow.swift       # One permission row (status badge + grant button)
+  Core/                       # App-wide infrastructure (no UI)
     ErrorHandling/
-      AppError.swift        # The single app-wide error type
+      AppError.swift          # The single app-wide error type
     Logging/
-      LogLevel.swift        # Severity (debug < info < warning < error)
-      LogCategory.swift     # Stable subsystem tags (ui, network, …)
-      LogEntry.swift        # Value type for one log record
-      LogHandler.swift      # Protocol: where a record goes
-      OSLogHandler.swift    # Production handler → Apple unified log
-      AppLogger.swift       # Facade: AppLogger.shared.info(…)
+      LogLevel.swift          # Severity (debug < info < warning < error)
+      LogCategory.swift       # Stable subsystem tags (ui, menuBar, permissions, …)
+      LogEntry.swift          # Value type for one log record
+      LogHandler.swift        # Protocol: where a record goes
+      OSLogHandler.swift      # Production handler → Apple unified log
+      AppLogger.swift         # Facade: AppLogger.shared.info(…)
     Localization/
-      L10n.swift            # Type-safe localized-string accessors
-      Localizable.xcstrings # String Catalog (English source)
-iMenuTests/                 # Swift Testing unit tests
-iMenuUITests/               # XCTest UI tests
+      L10n.swift              # Type-safe localized-string accessors
+      Localizable.xcstrings   # String Catalog (English source)
+iMenuTests/                   # Swift Testing unit tests
+iMenuUITests/                 # XCTest UI tests
 ```
 
 ## Working conventions
@@ -200,9 +244,9 @@ do {
 Use `AppLogger` for all diagnostics; never `print()`.
 
 ```swift
-AppLogger.shared.info("Home screen appeared", category: .ui)
+AppLogger.shared.info("Layout screen appeared", category: .ui)
 AppLogger.shared.warning("Cache miss", category: .persistence)
-AppLogger.shared.error(appError, category: .network)
+AppLogger.shared.error(appError, category: .menuBar)
 ```
 
 - Levels: `debug` < `info` < `warning` < `error`. Below `minimumLevel` is
