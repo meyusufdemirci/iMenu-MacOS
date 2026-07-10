@@ -11,23 +11,28 @@ import SwiftUI
 ///
 /// A `NavigationSplitView` whose sidebar is the app's **side menu** (driven by
 /// `SidebarItem`) and whose detail shows the selected page. Settings is the
-/// first item and the default selection. Kept thin: it owns the shared
-/// `SettingsStore`, drives selection, and routes to a page view — each page
-/// composes its own components.
+/// first item and the default selection. Kept thin: it binds to the shared
+/// `AppNavigation` and `SettingsStore` (owned by the app so they persist across
+/// the window closing and stay in sync with the menu bar), drives selection,
+/// and routes to a page view — each page composes its own components.
 struct MainView: View {
-    @State private var selection: SidebarItem = .settings
-    @State private var settings = SettingsStore()
+
+    /// Shared page selection, also driven by the menu bar.
+    @Bindable var navigation: AppNavigation
+
+    /// Shared user preferences.
+    let settings: SettingsStore
 
     var body: some View {
         NavigationSplitView {
-            List(SidebarItem.allCases, selection: $selection) { item in
+            List(SidebarItem.allCases, selection: $navigation.selection) { item in
                 Label(item.title, systemImage: item.systemImage)
                     .tag(item)
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
             .navigationTitle(L10n.App.name)
         } detail: {
-            detail(for: selection)
+            detail(for: navigation.selection)
         }
         .onAppear {
             AppLogger.shared.info("Main view appeared", category: .ui)
@@ -47,5 +52,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(navigation: AppNavigation(), settings: SettingsStore())
 }

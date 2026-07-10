@@ -38,6 +38,32 @@ enum L10n {
         }
     }
 
+    enum MenuBar {
+        static var open: String {
+            String(localized: "menubar.open",
+                   defaultValue: "Open",
+                   comment: "Menu bar item that opens the main window on its current page")
+        }
+
+        static var settings: String {
+            String(localized: "menubar.settings",
+                   defaultValue: "Settings",
+                   comment: "Menu bar item that opens the main window on the Settings page")
+        }
+
+        static var about: String {
+            String(localized: "menubar.about",
+                   defaultValue: "About",
+                   comment: "Menu bar item that opens the main window on the About page")
+        }
+
+        static var quit: String {
+            String(localized: "menubar.quit",
+                   defaultValue: "Quit iMenu",
+                   comment: "Menu bar item that quits the app entirely")
+        }
+    }
+
     enum Settings {
         static var generalSection: String {
             String(localized: "settings.section.general",

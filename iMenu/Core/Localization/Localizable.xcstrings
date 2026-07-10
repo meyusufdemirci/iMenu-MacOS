@@ -265,6 +265,54 @@
         }
       }
     },
+    "menubar.about" : {
+      "comment" : "Menu bar item that opens the main window on the About page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
+    },
+    "menubar.open" : {
+      "comment" : "Menu bar item that opens the main window on its current page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
+          }
+        }
+      }
+    },
+    "menubar.quit" : {
+      "comment" : "Menu bar item that quits the app entirely",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit iMenu"
+          }
+        }
+      }
+    },
+    "menubar.settings" : {
+      "comment" : "Menu bar item that opens the main window on the Settings page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
     "settings.launchAtLogin" : {
       "comment" : "Title of the launch-at-login preference",
       "extractionState" : "manual",
