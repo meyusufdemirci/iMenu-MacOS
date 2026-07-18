@@ -34,6 +34,10 @@ enum AppError: LocalizedError, Equatable {
     /// The app lacks the permission required for an operation.
     case permissionDenied
 
+    /// A synthesized ⌘-drag to reorder a real menu bar item couldn't be carried out
+    /// (the item's position couldn't be read, or the OS refused the move).
+    case menuBarItemReorderFailed
+
     var errorDescription: String? {
         switch self {
         case .unknown:
@@ -48,6 +52,8 @@ enum AppError: LocalizedError, Equatable {
             return L10n.Errors.persistence(detail)
         case .permissionDenied:
             return L10n.Errors.permissionDenied
+        case .menuBarItemReorderFailed:
+            return L10n.Errors.menuBarItemReorderFailed
         }
     }
 
@@ -57,6 +63,8 @@ enum AppError: LocalizedError, Equatable {
             return L10n.Errors.recoveryPermission
         case .invalidInput:
             return L10n.Errors.recoveryInvalidInput
+        case .menuBarItemReorderFailed:
+            return L10n.Errors.recoveryMenuBarItemReorder
         default:
             return L10n.Errors.recoveryGeneric
         }

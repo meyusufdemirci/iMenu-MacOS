@@ -112,6 +112,18 @@
         }
       }
     },
+    "error.menuBarItemReorderFailed" : {
+      "comment" : "Description for AppError.menuBarItemReorderFailed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That menu bar item couldn’t be moved."
+          }
+        }
+      }
+    },
     "error.notFound" : {
       "comment" : "Description for AppError.notFound; %@ is the resource name",
       "extractionState" : "manual",
@@ -168,6 +180,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check the highlighted field and try again."
+          }
+        }
+      }
+    },
+    "error.recovery.menuBarItemReorder" : {
+      "comment" : "Recovery suggestion for a failed menu bar item reorder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some items can’t be rearranged. Try moving a different item, or drag it in the menu bar by holding ⌘."
           }
         }
       }
@@ -317,13 +341,13 @@
       }
     },
     "layout.reorderHint" : {
-      "comment" : "Footer on the Layout page explaining that dragging only organizes the list and doesn't change the real menu bar",
+      "comment" : "Footer on the Layout page explaining that reordering within Visible changes the real menu bar while Hidden is a local list",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag items between sections, or within a section to reorder. This only organizes your list — it doesn’t change your menu bar."
+            "value" : "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden just sets it aside in this list. Some system items can’t be moved."
           }
         }
       }

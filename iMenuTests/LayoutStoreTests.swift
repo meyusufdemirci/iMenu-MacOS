@@ -24,6 +24,16 @@ struct LayoutStoreTests {
         func fetchItems() throws -> [MenuBarItemDescriptor] { try result.get() }
     }
 
+    /// Records the real-menu-bar reorders the store asks for, instead of synthesizing
+    /// a ⌘-drag — so tests assert *which* item is moved next to *which* neighbor
+    /// without touching the real menu bar.
+    private final class SpyReorderer: MenuBarItemReordering {
+        private(set) var moves: [(id: String, side: MenuBarItemDropSide)] = []
+        func move(id: String, to side: MenuBarItemDropSide) {
+            moves.append((id, side))
+        }
+    }
+
     /// A fresh, empty `UserDefaults` domain unique to each test.
     private func makeDefaults() -> UserDefaults {
         let suiteName = "LayoutStoreTests-\(UUID().uuidString)"
@@ -38,6 +48,12 @@ struct LayoutStoreTests {
 
     private func store(_ items: [MenuBarItemDescriptor], defaults: UserDefaults) -> LayoutStore {
         LayoutStore(provider: StubProvider(result: .success(items)), defaults: defaults)
+    }
+
+    /// A store wired to a spy reorderer, so a test can watch the real-menu-bar moves
+    /// an intra-Visible reorder triggers.
+    private func store(_ items: [MenuBarItemDescriptor], defaults: UserDefaults, reorderer: SpyReorderer) -> LayoutStore {
+        LayoutStore(provider: StubProvider(result: .success(items)), defaults: defaults, reorderer: reorderer)
     }
 
     // MARK: - Loading & partition
@@ -239,5 +255,80 @@ struct LayoutStoreTests {
         #expect(store.visibleItems.isEmpty)
         #expect(store.hiddenItems.isEmpty)
         #expect(store.state == .failed(.permissionDenied))
+    }
+
+    // MARK: - Reordering the real menu bar
+
+    @Test func reorderWithinVisibleMovesTheRealItemLeftOfItsNewRightNeighbor() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+
+        store.move(id: "c", toPositionOf: "a") // visible: [a, b, c] → [c, a, b]
+
+        // "c" now sits before "a", so the real item is dragged left of "a".
+        #expect(store.visibleItems.map(\.id) == ["c", "a", "b"])
+        #expect(spy.moves.count == 1)
+        #expect(spy.moves[0].id == "c")
+        #expect(spy.moves[0].side == .leftOf("a"))
+    }
+
+    @Test func reorderToEndOfVisibleMovesTheRealItemRightOfItsNewLeftNeighbor() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+
+        store.move(id: "a", toEndOf: .visible) // visible: [a, b, c] → [b, c, a]
+
+        // "a" is now the rightmost Visible item, so the real item is dragged right of "c".
+        #expect(store.visibleItems.map(\.id) == ["b", "c", "a"])
+        #expect(spy.moves.count == 1)
+        #expect(spy.moves[0].id == "a")
+        #expect(spy.moves[0].side == .rightOf("c"))
+    }
+
+    @Test func movingAVisibleItemToHiddenDoesNotTouchTheRealBar() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+
+        store.move(id: "b", toEndOf: .hidden) // a cross-section move, not a reorder
+
+        #expect(spy.moves.isEmpty)
+    }
+
+    @Test func unhidingAnItemDoesNotTouchTheRealBar() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+        store.move(id: "a", toEndOf: .hidden)   // visible: [b], hidden: [a] — no real move
+        store.move(id: "a", toEndOf: .visible)  // hidden → visible: an unhide, not a reorder
+
+        #expect(spy.moves.isEmpty)
+    }
+
+    @Test func aNoOpReorderDoesNotTouchTheRealBar() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+
+        store.move(id: "b", toPositionOf: "b")  // same item: no change
+        store.move(id: "c", toEndOf: .visible)  // "c" is already last: order unchanged
+
+        #expect(store.visibleItems.map(\.id) == ["a", "b", "c"])
+        #expect(spy.moves.isEmpty)
+    }
+
+    @Test func reorderingToAnEarlierPositionMovesTheRealItemLeftOfItsTarget() {
+        let spy = SpyReorderer()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+        store.load()
+
+        store.move(id: "a", toPositionOf: "c") // visible: [a, b, c] → [b, a, c]
+
+        #expect(store.visibleItems.map(\.id) == ["b", "a", "c"])
+        #expect(spy.moves.count == 1)
+        #expect(spy.moves[0].id == "a")
+        #expect(spy.moves[0].side == .leftOf("c"))
     }
 }

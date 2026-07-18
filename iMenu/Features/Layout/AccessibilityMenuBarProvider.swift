@@ -17,8 +17,10 @@ import ApplicationServices
 /// and the user to have granted **Accessibility** permission — without it,
 /// `fetchItems()` throws `AppError.permissionDenied` so the Layout page can prompt.
 ///
-/// It only ever **reads** the menu bar: it enumerates and reports items, and never
-/// presses, moves, hides, or otherwise controls them.
+/// It never moves items itself: it only **reads** the menu bar — enumerating items and
+/// re-reading their live positions. Reordering the real bar is done separately, by the
+/// `MenuBarItemRelocating` synthesized ⌘-drag; this provider just supplies the "where is
+/// it now" that drag needs.
 ///
 /// Beyond enumerating, it runs `MenuBarClipDetector` over the items' frames and the
 /// menu-bar screen's geometry and logs how many are actually **clipped** (behind
@@ -28,7 +30,18 @@ import ApplicationServices
 /// The Accessibility API exposes titles and positions but not the rendered status
 /// icon, so items carry their owning app's `bundleIdentifier` and the view draws
 /// the app's icon.
-final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
+///
+/// It also **locates** items on demand (`MenuBarItemLocating`): each fetch retains the
+/// live `AXUIElement`s it read, keyed by the same id the descriptor carries, so a Layout
+/// reorder can re-read an item's *current* frame — the source point a synthesized ⌘-drag
+/// grabs, and the neighbor position it drops next to. A reference type because that
+/// element registry is mutable state shared across a fetch and later position reads.
+final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemLocating {
+
+    /// The live elements from the most recent fetch, keyed by descriptor id, so a later
+    /// reorder can re-read their positions. Refreshed wholesale on every `fetchItems()`;
+    /// handles for items that have since gone away simply fail to locate.
+    private var elements: [String: AXUIElement] = [:]
 
     func fetchItems() throws -> [MenuBarItemDescriptor] {
         guard AXIsProcessTrusted() else {
@@ -37,6 +50,7 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
 
         let ownPID = ProcessInfo.processInfo.processIdentifier
         var positioned: [(item: MenuBarItemDescriptor, frame: CGRect)] = []
+        var freshElements: [String: AXUIElement] = [:]
 
         for app in NSWorkspace.shared.runningApplications {
             // Skip apps that can't own menu bar items, and iMenu itself.
@@ -83,12 +97,26 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
                     ),
                     frame
                 ))
+                freshElements[identity] = child
             }
         }
 
+        elements = freshElements
         let sorted = positioned.sorted { $0.frame.minX < $1.frame.minX }
         logClipDetection(frames: sorted.map(\.frame))
         return sorted.map(\.item)
+    }
+
+    // MARK: - Locating
+
+    /// The live frame of the item with `id`, re-read from the `AXUIElement` retained
+    /// during the last fetch — so a Layout reorder grabs the item (and aims at its
+    /// neighbor) where they sit *now*, not where the page last saw them. `nil` when the
+    /// id is unknown (never fetched, or gone since) or its position can't be read.
+    /// Top-left-origin global coordinates, same as `CGEvent`.
+    func frame(of id: String) -> CGRect? {
+        guard let element = elements[id] else { return nil }
+        return copyFrame(of: element)
     }
 
     // MARK: - AX helpers

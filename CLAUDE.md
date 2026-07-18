@@ -31,44 +31,48 @@ positioning, user stories, milestones); the essentials for working in this repo
 are below. **Keep this file consistent with those docs** — if they change, update
 here.
 
-### Current status — render mechanic proven; click-forwarding still open
+### Current status — reading proven; real reordering coded, unproven on device
 
-The core bet has moved from "unproven" to "partly proven in code." What the
-spike set out to answer is now answered for the *render* half:
+The product has narrowed from the original "second row" idea to a **Layout
+editor that edits the real menu bar in place**. The history matters: an earlier
+spike built a persistent second row plus `AXPress` click-forwarding, then
+`7edb760` **removed all of it** (second row, click-forwarding, divider-collapse),
+reducing Layout to a local-only organizer. The current direction re-adds a real
+menu bar effect — **reordering** — via a different mechanic.
 
 - **Reading other apps' items works.** `AccessibilityMenuBarProvider`
   enumerates every running app's `AXExtrasMenuBar` through the Accessibility
   API, reads each item's title and on-screen x-position, and returns them
-  ordered left-to-right. **This is the chosen mechanism** (of the three the PRD
-  weighed — spacing manipulation / Accessibility / Screen Recording). Its
+  ordered left-to-right. **This is the chosen read mechanism** (of the three the
+  PRD weighed — spacing manipulation / Accessibility / Screen Recording). Its
   **permission cost**: the app must run **un-sandboxed** and the user must grant
-  **Accessibility** — that's the answer the spike was gating on.
-- **Rendering a persistent second row works.** `SecondRowController` hosts a
-  borderless, non-activating `NSPanel` (`SecondRowView`) pinned just below the
-  system menu bar, right-aligned, live-driven by the shared `LayoutStore` — move
-  an item to *Hidden* on the Layout page and the row updates immediately.
+  **Accessibility**. The provider also retains the live `AXUIElement`s so it can
+  re-read a single item's *current* frame on demand (`MenuBarItemLocating`).
+- **Reordering the real menu bar is coded.** Reordering an item **within the
+  Visible section** on the Layout page drives the real bar: `LayoutStore` hands
+  the move to `SynthesizedMenuBarItemReorderer`, which reads the item's and its
+  new neighbor's live frames and posts a **synthesized ⌘-drag** (`CGEvent`, in
+  `SynthesizedMenuBarItemRelocator`) to physically relocate the item — automating
+  the ⌘-drag a user would do by hand. Moving an item to **Hidden** stays a local
+  list edit only.
 
-> ⚠️ **The hard half of the bet is coded but unproven on device.** Click-
-> forwarding (PRD **FR3 / US2**) is now **implemented**: the row takes mouse
-> events (`ignoresMouseEvents = false`, still a non-activating panel so focus
-> isn't stolen), each tile is a button, and a tap routes through
-> `LayoutStore.activate(id:)` to `AccessibilityMenuBarProvider`, which presses the
-> live `AXUIElement` it retained during the last fetch via `kAXPressAction` (works
-> even for items clipped off-screen). **What's unverified:** whether `AXPress`
-> actually opens every real item across third-party apps — some custom items may
-> not respond and may need a synthesized click fallback — plus validation across
-> the notch, multiple/external displays, Stage Manager, Spaces, and full-screen,
-> and survival across macOS point releases. Assume the mechanic may need
-> re-fixing on each major macOS release — treat all of that as unproven until
-> exercised on real hardware.
+> ⚠️ **The synthesized ⌘-drag is the fragile bet — coded but unproven on device.**
+> Whether macOS honors a *synthesized* ⌘-drag for every third-party item is
+> unverified; the step count, per-step delay, drop margin, and whether the
+> explicit Command key events help are the tuning knobs. It **moves the real
+> cursor** (~150ms) by design, so it runs on a user-initiated Layout drop, not
+> silently. **Also unverified:** OS-pinned items (clock, Control Center) that
+> won't move, and behavior across the notch, multiple/external displays, Stage
+> Manager, Spaces, and full-screen. Assume it may need re-fixing on each major
+> macOS release — treat it as unproven until exercised on real hardware. The pure
+> geometry and store/coordinator logic are unit-tested; only the CGEvent post is not.
 
-- Because the render mechanic is proven, **real product engineering is underway
-  (Milestone 1)** and the **Working conventions** below are **in force** — the
-  code already follows them (TDD, components, `L10n`, `AppError`, `AppLogger`).
-  The throwaway-spike exemption no longer applies.
+- **Working conventions** below are **in force** — the code follows them (TDD,
+  components, `L10n`, `AppError`, `AppLogger`). The throwaway-spike exemption no
+  longer applies.
 - Note: the app does **not** try to detect the OS's clip point (PRD FR1). It
-  reads *all* extras items and lets the user choose which go to the second row
-  (a Visible/Hidden split), rather than auto-detecting overflow.
+  reads *all* extras items and lets the user arrange them (a Visible/Hidden
+  split), rather than auto-detecting overflow.
 
 > **Docs to reconcile:** `Documents/prd.md` and `Documents/one-pager.md` still
 > carry the original "gated on feasibility spike / do not build product
@@ -128,16 +132,18 @@ iMenu/
   Features/                   # One folder per screen/feature
     Layout/
       LayoutView.swift              # Layout page: Visible/Hidden drag-between sections
-      LayoutStore.swift             # @Observable; fetches items, splits + orders, persists
+      LayoutStore.swift             # @Observable; splits + orders, persists, drives real reorder
       MenuBarItemDescriptor.swift   # Value type: one menu bar item as plain data
       MenuBarLayoutProviding.swift  # Provider protocol + SampleMenuBarLayoutProvider
-      AccessibilityMenuBarProvider.swift  # Real provider: reads other apps' AXExtrasMenuBar
+      AccessibilityMenuBarProvider.swift  # Real provider: reads AXExtrasMenuBar + locates live items
       ReorderableMenuBarRow.swift   # Drag-and-drop row for one section
-    SecondRow/
-      SecondRowController.swift     # Owns the NSPanel; observes store/settings (AppKit glue)
-      SecondRowView.swift           # The row's SwiftUI content (the Hidden items)
-      SecondRowPresentation.swift   # Pure show/hide rule (unit tested)
-      SecondRowPlacement.swift      # Pure panel geometry below the menu bar (unit tested)
+    SystemBar/                      # Editing the real macOS menu bar (synthesized ⌘-drag)
+      MenuBarItemReordering.swift          # Store's seam: "put item X next to neighbor Y" (+ Null impl)
+      SynthesizedMenuBarItemReorderer.swift # Coordinator: reads live frames, computes drop, drags
+      MenuBarItemDragGeometry.swift        # Pure geometry: drop point beside a neighbor + drag path
+      MenuBarItemLocating.swift            # Seam: an item's current on-screen frame by id
+      MenuBarItemRelocating.swift          # Seam: the low-level "⌘-drag from A to B" intent
+      SynthesizedMenuBarItemRelocator.swift # Live impl: posts the ⌘-drag CGEvents
     Permissions/
       PermissionsView.swift         # Permissions page (Accessibility status + grant)
       PermissionsStore.swift        # @Observable permission state

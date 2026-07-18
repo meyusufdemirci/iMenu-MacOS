@@ -15,10 +15,11 @@ import SwiftUI
 /// - **Visible** — where every item starts.
 /// - **Hidden** — where you can park items.
 ///
-/// The split is a local organizer only: rearranging or hiding items here changes
-/// how this list is grouped and nothing else — it never touches your real macOS
-/// menu bar. Kept thin: it switches on the store's load state and delegates each
-/// section to a `LayoutSectionView`, wiring the drops to the store's move actions.
+/// Reordering within **Visible** edits your real macOS menu bar (the store synthesizes
+/// a ⌘-drag to move the real item); moving between **Visible** and **Hidden** only
+/// regroups this local list. Kept thin: it switches on the store's load state and
+/// delegates each section to a `LayoutSectionView`, wiring the drops to the store's
+/// move actions.
 struct LayoutView: View {
 
     /// The source of truth for the page's items, state, and reordering.

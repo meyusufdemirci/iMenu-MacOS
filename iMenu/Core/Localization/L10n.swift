@@ -135,8 +135,8 @@ enum L10n {
 
         static var reorderHint: String {
             String(localized: "layout.reorderHint",
-                   defaultValue: "Drag items between sections, or within a section to reorder. This only organizes your list — it doesn’t change your menu bar.",
-                   comment: "Footer on the Layout page explaining that dragging only organizes the list and doesn't change the real menu bar")
+                   defaultValue: "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden just sets it aside in this list. Some system items can’t be moved.",
+                   comment: "Footer on the Layout page explaining that reordering within Visible changes the real menu bar while Hidden is a local list")
         }
 
         static var loading: String {
@@ -410,6 +410,12 @@ enum L10n {
                    comment: "Description for AppError.permissionDenied")
         }
 
+        static var menuBarItemReorderFailed: String {
+            String(localized: "error.menuBarItemReorderFailed",
+                   defaultValue: "That menu bar item couldn’t be moved.",
+                   comment: "Description for AppError.menuBarItemReorderFailed")
+        }
+
         static var recoveryGeneric: String {
             String(localized: "error.recovery.generic",
                    defaultValue: "Please try again.",
@@ -426,6 +432,12 @@ enum L10n {
             String(localized: "error.recovery.invalidInput",
                    defaultValue: "Check the highlighted field and try again.",
                    comment: "Recovery suggestion for an invalid-input error")
+        }
+
+        static var recoveryMenuBarItemReorder: String {
+            String(localized: "error.recovery.menuBarItemReorder",
+                   defaultValue: "Some items can’t be rearranged. Try moving a different item, or drag it in the menu bar by holding ⌘.",
+                   comment: "Recovery suggestion for a failed menu bar item reorder")
         }
     }
 }

@@ -17,15 +17,19 @@ import Observation
 /// - **Visible** — where every fetched item starts.
 /// - **Hidden** — where the user can park items.
 ///
-/// The split is purely a **local organizer**: items can move within a section
-/// (reorder) or between sections (visible/hidden), and both the section assignment
-/// and the order are persisted to an **injected** `UserDefaults`, but none of it
-/// touches the real macOS menu bar — the store never presses, moves, or hides the
-/// actual items. The saved arrangement is the durable *intent*: it's applied on
-/// every `load()`, so an item keeps its section and place across launches. Items
-/// that appear later default to **Visible** and are appended after the ones already
-/// arranged. `refresh()` goes the other way — it re-adopts the real menu bar's
-/// current order and saves that as the new arrangement.
+/// Reordering an item **within Visible** edits the real macOS menu bar: the store hands
+/// the move to an **injected** `MenuBarItemReordering`, which synthesizes a ⌘-drag to
+/// physically relocate the real item next to its new neighbor (best-effort — some system
+/// items can't be moved). The **Hidden** section stays a local organizer: moving an item
+/// between Visible and Hidden only regroups this list, it doesn't press, hide, or move
+/// the real item.
+///
+/// Both the section assignment and the order are persisted to an **injected**
+/// `UserDefaults`. The saved arrangement is the durable *intent*: it's applied on every
+/// `load()`, so an item keeps its section and place across launches. Items that appear
+/// later default to **Visible** and are appended after the ones already arranged.
+/// `refresh()` goes the other way — it re-adopts the real menu bar's current order and
+/// saves that as the new arrangement.
 @Observable
 final class LayoutStore {
 
@@ -54,18 +58,34 @@ final class LayoutStore {
 
     @ObservationIgnored private let provider: MenuBarLayoutProviding
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let reorderer: MenuBarItemReordering
 
     /// - Parameters:
     ///   - provider: Where items come from. Defaults to the real Accessibility
     ///     provider; previews use the sample provider and tests inject a stub.
     ///   - defaults: Where the chosen split/order is persisted. Defaults to
     ///     `.standard`; tests inject an isolated suite.
+    ///   - reorderer: Applies a Visible reorder to the real menu bar. Defaults to a
+    ///     synthesized ⌘-drag when the provider can locate live items (the real
+    ///     Accessibility provider); otherwise a no-op, so a store over sample/stub data
+    ///     stays a purely local list. Tests inject a spy.
     init(
         provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        reorderer: MenuBarItemReordering? = nil
     ) {
         self.provider = provider
         self.defaults = defaults
+        if let reorderer {
+            self.reorderer = reorderer
+        } else if let locator = provider as? MenuBarItemLocating {
+            self.reorderer = SynthesizedMenuBarItemReorderer(
+                locator: locator,
+                relocator: SynthesizedMenuBarItemRelocator()
+            )
+        } else {
+            self.reorderer = NullMenuBarItemReordering()
+        }
     }
 
     /// Fetches the current items and applies the **saved** split and order, so the
@@ -128,6 +148,9 @@ final class LayoutStore {
               let targetSection = section(of: targetID)
         else { return }
 
+        let sourceSection = section(of: draggedID)
+        let visibleOrderBefore = visibleItems.map(\.id)
+
         // Validated above, so the removal always succeeds and the target — a
         // different id — is still present afterwards.
         guard let dragged = removeItem(draggedID) else { return }
@@ -135,6 +158,8 @@ final class LayoutStore {
         insert(dragged, at: targetIndex, in: targetSection)
         persist()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
+
+        applyRealReorderIfNeeded(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
     }
 
     /// Moves the item identified by `draggedID` to the **end** of `section` —
@@ -142,10 +167,39 @@ final class LayoutStore {
     /// If the item is already in that section it's moved to the end. Unknown ids
     /// are a no-op.
     func move(id draggedID: String, toEndOf section: Section) {
+        let sourceSection = self.section(of: draggedID)
+        let visibleOrderBefore = visibleItems.map(\.id)
+
         guard let dragged = removeItem(draggedID) else { return }
         append(dragged, to: section)
         persist()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
+
+        applyRealReorderIfNeeded(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
+    }
+
+    // MARK: - Reflecting a Visible reorder onto the real menu bar
+
+    /// Mirrors a reorder **within the Visible section** onto the real macOS menu bar by
+    /// asking the `reorderer` to move the real item next to its new neighbor. Only a pure
+    /// intra-Visible reorder drives the real bar — the item was Visible, is still Visible,
+    /// and the Visible order actually changed. Cross-section moves (Visible↔Hidden) and
+    /// no-op reorders leave the real bar untouched.
+    ///
+    /// The move is expressed relative to the neighbor the item now sits beside: dropped
+    /// **left of** the item now to its right, or — when it's become the rightmost Visible
+    /// item — **right of** the item now to its left. A lone Visible item has no neighbor
+    /// to anchor to, so nothing is moved.
+    private func applyRealReorderIfNeeded(movedID: String, sourceSection: Section?, visibleOrderBefore: [String]) {
+        guard sourceSection == .visible, section(of: movedID) == .visible else { return }
+        guard visibleItems.map(\.id) != visibleOrderBefore else { return }
+        guard let index = visibleItems.firstIndex(where: { $0.id == movedID }) else { return }
+
+        if index + 1 < visibleItems.count {
+            reorderer.move(id: movedID, to: .leftOf(visibleItems[index + 1].id))
+        } else if index >= 1 {
+            reorderer.move(id: movedID, to: .rightOf(visibleItems[index - 1].id))
+        }
     }
 
     // MARK: - Persistence
