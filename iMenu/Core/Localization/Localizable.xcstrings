@@ -124,30 +124,6 @@
         }
       }
     },
-    "error.menuBarItemActivationFailed" : {
-      "comment" : "Description for AppError.menuBarItemActivationFailed",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu couldn’t open that menu bar item."
-          }
-        }
-      }
-    },
-    "error.menuBarItemPlacementFailed" : {
-      "comment" : "Description for AppError.menuBarItemPlacementFailed",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu couldn’t move that menu bar item."
-          }
-        }
-      }
-    },
     "error.permissionDenied" : {
       "comment" : "Description for AppError.permissionDenied",
       "extractionState" : "manual",
@@ -299,7 +275,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iMenu didn’t find any menu bar items to arrange."
+            "value" : "iMenu didn’t find any menu bar items to show."
           }
         }
       }
@@ -341,13 +317,13 @@
       }
     },
     "layout.reorderHint" : {
-      "comment" : "Footer explaining what dragging does on the Layout page",
+      "comment" : "Footer on the Layout page explaining that dragging only organizes the list and doesn't change the real menu bar",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag items between Visible and Hidden, or within a section to reorder."
+            "value" : "Drag items between sections, or within a section to reorder. This only organizes your list — it doesn’t change your menu bar."
           }
         }
       }
@@ -472,20 +448,8 @@
         }
       }
     },
-    "layout.sampleNotice" : {
-      "comment" : "Footer note that the Layout list currently shows placeholder data",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "These are sample items — live menu bar detection is coming soon."
-          }
-        }
-      }
-    },
     "layout.section.hidden" : {
-      "comment" : "Header of the section listing items surfaced in the second row",
+      "comment" : "Header of the Hidden section on the Layout page",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -503,7 +467,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These move to the second row below your menu bar."
+            "value" : "Items you’ve set aside here."
           }
         }
       }
@@ -515,13 +479,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag items here to show them in the second row."
+            "value" : "Drag items here."
           }
         }
       }
     },
     "layout.section.visible" : {
-      "comment" : "Header of the section listing items that stay in the menu bar",
+      "comment" : "Header of the Visible section on the Layout page",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -539,7 +503,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These stay in your menu bar."
+            "value" : "Items shown in your menu bar."
           }
         }
       }
@@ -551,7 +515,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drag items here to keep them in the menu bar."
+            "value" : "Drag items here."
           }
         }
       }
@@ -564,18 +528,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "About"
-          }
-        }
-      }
-    },
-    "menubar.autoParkItemDebug" : {
-      "comment" : "Debug menu item that synthesizes a ⌘-drag to move the rightmost menu bar item past iMenu's divider",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auto-Park Rightmost Item (debug)"
           }
         }
       }
@@ -600,18 +552,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quit iMenu"
-          }
-        }
-      }
-    },
-    "menubar.toggleHiddenZoneDebug" : {
-      "comment" : "Debug menu item that collapses/expands iMenu's menu bar divider to test the hide mechanic",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toggle Hidden Zone (debug)"
           }
         }
       }
@@ -784,42 +724,6 @@
         }
       }
     },
-    "secondRow.activateHint" : {
-      "comment" : "Accessibility hint on a second-row tile: clicking it opens the real menu bar item",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opens this menu bar item."
-          }
-        }
-      }
-    },
-    "systemBar.divider.accessibilityLabel" : {
-      "comment" : "Accessibility label for iMenu's menu bar divider that marks which items are hidden",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu hidden-items divider"
-          }
-        }
-      }
-    },
-    "systemBar.divider.tooltip" : {
-      "comment" : "Tooltip on iMenu's menu bar toggle explaining that clicking shows/hides parked items and items are parked by dragging them to its left",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Click to show or hide iMenu's parked items. Drag menu bar items to the left of this arrow to park them."
-          }
-        }
-      }
-    },
     "settings.section.general" : {
       "comment" : "Header for the general section of Settings",
       "extractionState" : "manual",
@@ -828,30 +732,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "General"
-          }
-        }
-      }
-    },
-    "settings.showSecondRow" : {
-      "comment" : "Title of the show-second-row preference",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show the second row automatically"
-          }
-        }
-      }
-    },
-    "settings.showSecondRow.detail" : {
-      "comment" : "Explanation of the show-second-row preference",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reveal clipped menu bar items in a second row when iMenu starts."
           }
         }
       }

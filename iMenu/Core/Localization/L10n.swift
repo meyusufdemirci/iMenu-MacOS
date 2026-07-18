@@ -74,23 +74,6 @@ enum L10n {
                    defaultValue: "Quit iMenu",
                    comment: "Menu bar item that quits the app entirely")
         }
-
-        /// DEBUG (milestones 0.5): manual toggle to exercise the divider-collapse
-        /// primitive on real hardware. Removed once the mechanic is proven.
-        static var toggleHiddenZoneDebug: String {
-            String(localized: "menubar.toggleHiddenZoneDebug",
-                   defaultValue: "Toggle Hidden Zone (debug)",
-                   comment: "Debug menu item that collapses/expands iMenu's menu bar divider to test the hide mechanic")
-        }
-
-        /// DEBUG (milestones 0.5): exercises the synthesized ⌘-drag by auto-parking
-        /// the rightmost item past iMenu's divider on real hardware. Removed once
-        /// per-item auto-placement is proven.
-        static var autoParkItemDebug: String {
-            String(localized: "menubar.autoParkItemDebug",
-                   defaultValue: "Auto-Park Rightmost Item (debug)",
-                   comment: "Debug menu item that synthesizes a ⌘-drag to move the rightmost menu bar item past iMenu's divider")
-        }
     }
 
     enum Settings {
@@ -111,67 +94,49 @@ enum L10n {
                    defaultValue: "Open iMenu automatically when you log in.",
                    comment: "Explanation of the launch-at-login preference")
         }
-
-        static var showSecondRow: String {
-            String(localized: "settings.showSecondRow",
-                   defaultValue: "Show the second row automatically",
-                   comment: "Title of the show-second-row preference")
-        }
-
-        static var showSecondRowDetail: String {
-            String(localized: "settings.showSecondRow.detail",
-                   defaultValue: "Reveal clipped menu bar items in a second row when iMenu starts.",
-                   comment: "Explanation of the show-second-row preference")
-        }
     }
 
     enum Layout {
         static var visibleSection: String {
             String(localized: "layout.section.visible",
                    defaultValue: "Visible",
-                   comment: "Header of the section listing items that stay in the menu bar")
+                   comment: "Header of the Visible section on the Layout page")
         }
 
         static var visibleSectionDetail: String {
             String(localized: "layout.section.visible.detail",
-                   defaultValue: "These stay in your menu bar.",
+                   defaultValue: "Items shown in your menu bar.",
                    comment: "Explanation of the Visible section on the Layout page")
         }
 
         static var visibleEmpty: String {
             String(localized: "layout.section.visible.empty",
-                   defaultValue: "Drag items here to keep them in the menu bar.",
+                   defaultValue: "Drag items here.",
                    comment: "Placeholder shown when the Visible section has no items")
         }
 
         static var hiddenSection: String {
             String(localized: "layout.section.hidden",
                    defaultValue: "Hidden",
-                   comment: "Header of the section listing items surfaced in the second row")
+                   comment: "Header of the Hidden section on the Layout page")
         }
 
         static var hiddenSectionDetail: String {
             String(localized: "layout.section.hidden.detail",
-                   defaultValue: "These move to the second row below your menu bar.",
+                   defaultValue: "Items you’ve set aside here.",
                    comment: "Explanation of the Hidden section on the Layout page")
         }
 
         static var hiddenEmpty: String {
             String(localized: "layout.section.hidden.empty",
-                   defaultValue: "Drag items here to show them in the second row.",
+                   defaultValue: "Drag items here.",
                    comment: "Placeholder shown when the Hidden section has no items")
         }
 
         static var reorderHint: String {
             String(localized: "layout.reorderHint",
-                   defaultValue: "Drag items between Visible and Hidden, or within a section to reorder.",
-                   comment: "Footer explaining what dragging does on the Layout page")
-        }
-
-        static var sampleNotice: String {
-            String(localized: "layout.sampleNotice",
-                   defaultValue: "These are sample items — live menu bar detection is coming soon.",
-                   comment: "Footer note that the Layout list currently shows placeholder data")
+                   defaultValue: "Drag items between sections, or within a section to reorder. This only organizes your list — it doesn’t change your menu bar.",
+                   comment: "Footer on the Layout page explaining that dragging only organizes the list and doesn't change the real menu bar")
         }
 
         static var loading: String {
@@ -200,7 +165,7 @@ enum L10n {
 
         static var emptyDescription: String {
             String(localized: "layout.empty.description",
-                   defaultValue: "iMenu didn’t find any menu bar items to arrange.",
+                   defaultValue: "iMenu didn’t find any menu bar items to show.",
                    comment: "Description of the empty state on the Layout page")
         }
 
@@ -261,28 +226,6 @@ enum L10n {
                        defaultValue: "Clock",
                        comment: "Sample menu bar item: the menu bar clock")
             }
-        }
-    }
-
-    enum SecondRow {
-        static var activateHint: String {
-            String(localized: "secondRow.activateHint",
-                   defaultValue: "Opens this menu bar item.",
-                   comment: "Accessibility hint on a second-row tile: clicking it opens the real menu bar item")
-        }
-    }
-
-    enum SystemBar {
-        static var dividerAccessibilityLabel: String {
-            String(localized: "systemBar.divider.accessibilityLabel",
-                   defaultValue: "iMenu hidden-items divider",
-                   comment: "Accessibility label for iMenu's menu bar divider that marks which items are hidden")
-        }
-
-        static var dividerTooltip: String {
-            String(localized: "systemBar.divider.tooltip",
-                   defaultValue: "Click to show or hide iMenu's parked items. Drag menu bar items to the left of this arrow to park them.",
-                   comment: "Tooltip on iMenu's menu bar toggle explaining that clicking shows/hides parked items and items are parked by dragging them to its left")
         }
     }
 
@@ -465,18 +408,6 @@ enum L10n {
             String(localized: "error.permissionDenied",
                    defaultValue: "You don’t have permission to do that.",
                    comment: "Description for AppError.permissionDenied")
-        }
-
-        static var menuBarItemActivationFailed: String {
-            String(localized: "error.menuBarItemActivationFailed",
-                   defaultValue: "iMenu couldn’t open that menu bar item.",
-                   comment: "Description for AppError.menuBarItemActivationFailed")
-        }
-
-        static var menuBarItemPlacementFailed: String {
-            String(localized: "error.menuBarItemPlacementFailed",
-                   defaultValue: "iMenu couldn’t move that menu bar item.",
-                   comment: "Description for AppError.menuBarItemPlacementFailed")
         }
 
         static var recoveryGeneric: String {

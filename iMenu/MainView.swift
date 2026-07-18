@@ -29,15 +29,6 @@ struct MainView: View {
     /// Shared permission state (Accessibility + Screen Recording).
     let permissionsStore: PermissionsStore
 
-    /// Owns the second-row panel; started here so it's running once the app's UI
-    /// is up. Its observation outlives this window, so a later window close/reopen
-    /// leaves the row untouched (`start()` is idempotent).
-    let secondRow: SecondRowController
-
-    /// Hides Hidden items from the real menu bar; `install()`ed here so its divider
-    /// is visible once the app's UI is up (milestones 0.5).
-    let collapser: DividerMenuBarCollapser
-
     var body: some View {
         NavigationSplitView {
             List(SidebarItem.allCases, selection: $navigation.selection) { item in
@@ -51,8 +42,6 @@ struct MainView: View {
         }
         .onAppear {
             AppLogger.shared.info("Main view appeared", category: .ui)
-            secondRow.start()
-            collapser.install()
         }
     }
 
@@ -73,14 +62,10 @@ struct MainView: View {
 }
 
 #Preview {
-    let settings = SettingsStore()
-    let layoutStore = LayoutStore()
-    return MainView(
+    MainView(
         navigation: AppNavigation(),
-        settings: settings,
-        layoutStore: layoutStore,
-        permissionsStore: PermissionsStore(),
-        secondRow: SecondRowController(store: layoutStore, settings: settings),
-        collapser: DividerMenuBarCollapser()
+        settings: SettingsStore(),
+        layoutStore: LayoutStore(provider: SampleMenuBarLayoutProvider()),
+        permissionsStore: PermissionsStore()
     )
 }

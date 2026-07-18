@@ -14,21 +14,17 @@ import Observation
 /// through an **injected** `MenuBarLayoutProviding` (so tests use a stub), and
 /// splits them into two sections:
 ///
-/// - **Visible** — items that stay in the system menu bar.
-/// - **Hidden** — items iMenu surfaces in its persistent second row below the
-///   menu bar.
+/// - **Visible** — where every fetched item starts.
+/// - **Hidden** — where the user can park items.
 ///
-/// Items can move within a section (reorder) or between sections (show/hide), and
-/// both the section assignment and the order are persisted to an **injected**
-/// `UserDefaults`. That saved split is the durable *intent*: it's applied on every
-/// load, so an item keeps its section and place across launches. Items that appear
-/// later default to **Visible** and are appended after the ones already arranged.
-///
-/// The Hidden split also drives the **real** menu bar: whenever it's non-empty the
-/// store asks an injected `SystemMenuBarCollapsing` to collapse iMenu's divider,
-/// pushing the items parked to its left off the system bar (milestones 0.5 path
-/// (a)); emptying Hidden restores them. The collapser is optional — previews,
-/// sample data, and tests inject none, and the store stays a pure data model.
+/// The split is purely a **local organizer**: items can move within a section
+/// (reorder) or between sections (visible/hidden), and both the section assignment
+/// and the order are persisted to an **injected** `UserDefaults`, but none of it
+/// touches the real macOS menu bar — the store never presses, moves, or hides the
+/// actual items. The saved arrangement is the durable *intent*: it's applied on
+/// every load, so an item keeps its section and place across launches. Items that
+/// appear later default to **Visible** and are appended after the ones already
+/// arranged.
 @Observable
 final class LayoutStore {
 
@@ -42,48 +38,32 @@ final class LayoutStore {
 
     /// One of the two Layout sections an item can live in.
     nonisolated enum Section: Equatable, Sendable {
-        /// Stays in the system menu bar.
         case visible
-        /// Surfaced in iMenu's second row.
         case hidden
     }
 
-    /// Items that stay in the menu bar, in the user's chosen order.
+    /// Items in the Visible section, in the user's chosen order.
     private(set) var visibleItems: [MenuBarItemDescriptor] = []
 
-    /// Items surfaced in the second row, in the user's chosen order.
+    /// Items in the Hidden section, in the user's chosen order.
     private(set) var hiddenItems: [MenuBarItemDescriptor] = []
 
     /// The current load state the view switches on.
     private(set) var state: LoadState = .idle
 
     @ObservationIgnored private let provider: MenuBarLayoutProviding
-    @ObservationIgnored private let activator: MenuBarItemActivating?
-    @ObservationIgnored private let collapser: SystemMenuBarCollapsing?
     @ObservationIgnored private let defaults: UserDefaults
 
     /// - Parameters:
     ///   - provider: Where items come from. Defaults to the real Accessibility
     ///     provider; previews use the sample provider and tests inject a stub.
-    ///   - activator: What opens the real item behind a second-row tile. `nil`
-    ///     (the default) makes `activate(id:)` a no-op — right for previews and
-    ///     sample data; the app injects the same Accessibility provider used to
-    ///     fetch, so it presses the very element it read.
-    ///   - collapser: What hides the Hidden items from the *real* menu bar
-    ///     (milestones 0.5 path (a)). `nil` (the default) leaves the system bar
-    ///     untouched — right for previews, sample data, and tests; the app injects
-    ///     the divider-based collapser.
     ///   - defaults: Where the chosen split/order is persisted. Defaults to
     ///     `.standard`; tests inject an isolated suite.
     init(
         provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(),
-        activator: MenuBarItemActivating? = nil,
-        collapser: SystemMenuBarCollapsing? = nil,
         defaults: UserDefaults = .standard
     ) {
         self.provider = provider
-        self.activator = activator
-        self.collapser = collapser
         self.defaults = defaults
     }
 
@@ -95,22 +75,17 @@ final class LayoutStore {
         do {
             let fetched = try provider.fetchItems()
             applyPartition(to: fetched)
-            syncSystemBar()
             state = .loaded
             AppLogger.shared.info("Loaded \(visibleItems.count + hiddenItems.count) menu bar items", category: .menuBar)
         } catch let error as AppError {
             visibleItems = []
             hiddenItems = []
-            // Nothing is Hidden now, so restore the real bar — never leave items
-            // stranded off-screen because a read failed.
-            syncSystemBar()
             state = .failed(error)
             AppLogger.shared.error(error, category: .menuBar)
         } catch {
             let appError = AppError.unexpected(String(describing: error))
             visibleItems = []
             hiddenItems = []
-            syncSystemBar()
             state = .failed(appError)
             AppLogger.shared.error(appError, category: .menuBar)
         }
@@ -134,7 +109,6 @@ final class LayoutStore {
         let targetIndex = index(of: targetID, in: targetSection) ?? self[targetSection].count
         insert(dragged, at: targetIndex, in: targetSection)
         persist()
-        syncSystemBar()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
     }
 
@@ -146,36 +120,7 @@ final class LayoutStore {
         guard let dragged = removeItem(draggedID) else { return }
         append(dragged, to: section)
         persist()
-        syncSystemBar()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
-    }
-
-    // MARK: - System menu bar
-
-    /// Reflects the Hidden set onto the *real* menu bar: collapse iMenu's divider
-    /// (hiding the items parked to its left) when anything is Hidden, restore it
-    /// when nothing is. A no-op when no collapser was injected — previews, sample
-    /// data, and tests leave the system bar untouched (milestones 0.5 path (a)).
-    private func syncSystemBar() {
-        collapser?.setCollapsed(hiddenItems.isEmpty == false)
-    }
-
-    // MARK: - Activation
-
-    /// Opens the real menu bar item behind the second-row tile with `id` by
-    /// pressing it through the injected activator (PRD FR3 / US2). Best-effort:
-    /// with no activator (previews/sample) it's a no-op, and a press failure is
-    /// logged, never propagated — a stale or unpressable item just does nothing
-    /// rather than disrupting the row.
-    func activate(id: String) {
-        guard let activator else { return }
-        do {
-            try activator.activate(id: id)
-        } catch let error as AppError {
-            AppLogger.shared.error(error, category: .menuBar)
-        } catch {
-            AppLogger.shared.error(AppError.unexpected(String(describing: error)), category: .menuBar)
-        }
     }
 
     // MARK: - Persistence

@@ -15,19 +15,14 @@ import Observation
 /// domain (see `SettingsStoreTests`) instead of the shared `.standard` one.
 ///
 /// Preferences here are stored today and honored by their features as those
-/// features land (e.g. the second-row renderer, launch-at-login registration);
-/// the store stays the durable home for the *intent* regardless.
+/// features land (e.g. launch-at-login registration); the store stays the durable
+/// home for the *intent* regardless.
 @Observable
 final class SettingsStore {
 
     /// Open iMenu automatically when the user logs in.
     var launchAtLogin: Bool {
         didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) }
-    }
-
-    /// Reveal clipped menu bar items in the second row as soon as iMenu starts.
-    var showSecondRowAutomatically: Bool {
-        didSet { defaults.set(showSecondRowAutomatically, forKey: Keys.showSecondRowAutomatically) }
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -37,13 +32,11 @@ final class SettingsStore {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
-        self.showSecondRowAutomatically = defaults.object(forKey: Keys.showSecondRowAutomatically) as? Bool ?? true
     }
 
     /// Persistence keys, kept private so the storage layout is an implementation
     /// detail of the store.
     private enum Keys {
         static let launchAtLogin = "settings.launchAtLogin"
-        static let showSecondRowAutomatically = "settings.showSecondRowAutomatically"
     }
 }

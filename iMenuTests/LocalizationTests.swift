@@ -36,18 +36,20 @@ struct LocalizationTests {
         #expect(L10n.Settings.generalSection.isEmpty == false)
         #expect(L10n.Settings.launchAtLogin.isEmpty == false)
         #expect(L10n.Settings.launchAtLoginDetail.isEmpty == false)
-        #expect(L10n.Settings.showSecondRow.isEmpty == false)
-        #expect(L10n.Settings.showSecondRowDetail.isEmpty == false)
     }
 
-    @Test func secondRowAndActivationStringsResolveToNonEmptyValues() {
-        #expect(L10n.SecondRow.activateHint.isEmpty == false)
-        #expect(L10n.Errors.menuBarItemActivationFailed.isEmpty == false)
-    }
-
-    @Test func systemBarStringsResolveToNonEmptyValues() {
-        #expect(L10n.SystemBar.dividerAccessibilityLabel.isEmpty == false)
-        #expect(L10n.SystemBar.dividerTooltip.isEmpty == false)
+    @Test func layoutStringsResolveToNonEmptyValues() {
+        #expect(L10n.Layout.visibleSection.isEmpty == false)
+        #expect(L10n.Layout.visibleSectionDetail.isEmpty == false)
+        #expect(L10n.Layout.visibleEmpty.isEmpty == false)
+        #expect(L10n.Layout.hiddenSection.isEmpty == false)
+        #expect(L10n.Layout.hiddenSectionDetail.isEmpty == false)
+        #expect(L10n.Layout.hiddenEmpty.isEmpty == false)
+        #expect(L10n.Layout.reorderHint.isEmpty == false)
+        #expect(L10n.Layout.loading.isEmpty == false)
+        #expect(L10n.Layout.refresh.isEmpty == false)
+        #expect(L10n.Layout.emptyTitle.isEmpty == false)
+        #expect(L10n.Layout.emptyDescription.isEmpty == false)
     }
 
     @Test func permissionsStringsResolveToNonEmptyValues() {

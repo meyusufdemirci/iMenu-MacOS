@@ -10,12 +10,12 @@ import Testing
 @testable import iMenu
 
 /// `LayoutStore` fetches the menu bar items from an injected provider and splits
-/// them into two sections — **Visible** (stay in the menu bar) and **Hidden**
-/// (surfaced in iMenu's second row). It exposes a load state the UI switches on,
-/// lets items move within and between the sections, and persists both the section
-/// assignment and the order to an injected `UserDefaults`. These tests drive it
-/// with a stub provider and a throwaway defaults domain, so they never touch
-/// Accessibility or `.standard`.
+/// them into two local sections — **Visible** and **Hidden**. The split only
+/// organizes this list and never touches the real menu bar. The store exposes a
+/// load state the UI switches on, lets items move within and between the sections,
+/// and persists both the section assignment and the order to an injected
+/// `UserDefaults`. These tests drive it with a stub provider and a throwaway
+/// defaults domain, so they never touch Accessibility or `.standard`.
 struct LayoutStoreTests {
 
     /// A provider whose result the test controls (success payload or failure).

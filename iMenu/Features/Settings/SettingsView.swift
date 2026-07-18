@@ -23,12 +23,6 @@ struct SettingsView: View {
                     subtitle: L10n.Settings.launchAtLoginDetail,
                     isOn: $settings.launchAtLogin
                 )
-
-                SettingToggleRow(
-                    title: L10n.Settings.showSecondRow,
-                    subtitle: L10n.Settings.showSecondRowDetail,
-                    isOn: $settings.showSecondRowAutomatically
-                )
             }
         }
         .formStyle(.grouped)

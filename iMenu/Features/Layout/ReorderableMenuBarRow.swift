@@ -177,7 +177,7 @@ struct ReorderableMenuBarRow: View {
 }
 
 #Preview("Empty") {
-    ReorderableMenuBarRow(items: [], emptyPrompt: "Drag items here to show them in the second row.") { _, _ in } onDropAtEnd: { _ in }
+    ReorderableMenuBarRow(items: [], emptyPrompt: "Drag items here.") { _, _ in } onDropAtEnd: { _ in }
         .frame(width: 520)
         .padding()
 }

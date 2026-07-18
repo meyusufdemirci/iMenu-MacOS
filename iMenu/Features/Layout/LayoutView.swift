@@ -9,15 +9,16 @@ import SwiftUI
 
 /// The Layout page of the side menu.
 ///
-/// Fetches the current menu bar items through its `LayoutStore` and splits them
-/// into two sections you can **drag between**:
+/// Fetches the current menu bar items through its `LayoutStore` and shows them in
+/// two sections you can **drag between**:
 ///
-/// - **Visible** — items that stay in the system menu bar.
-/// - **Hidden** — items iMenu surfaces in its second row below the menu bar.
+/// - **Visible** — where every item starts.
+/// - **Hidden** — where you can park items.
 ///
-/// Kept thin: it switches on the store's load state and delegates each section to
-/// a `LayoutSectionView`, wiring the drops to the store's move actions; the
-/// fetching, splitting, ordering, and persistence live in the store.
+/// The split is a local organizer only: rearranging or hiding items here changes
+/// how this list is grouped and nothing else — it never touches your real macOS
+/// menu bar. Kept thin: it switches on the store's load state and delegates each
+/// section to a `LayoutSectionView`, wiring the drops to the store's move actions.
 struct LayoutView: View {
 
     /// The source of truth for the page's items, state, and reordering.
@@ -70,7 +71,7 @@ struct LayoutView: View {
         }
     }
 
-    /// The two drag-between sections and the explanatory footnotes, stacked and
+    /// The two drag-between sections and the explanatory footnote, stacked and
     /// scrollable so both fit on smaller windows.
     private var loadedContent: some View {
         ScrollView {
@@ -93,12 +94,9 @@ struct LayoutView: View {
                     onDropAtEnd: { store.move(id: $0, toEndOf: .hidden) }
                 )
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(L10n.Layout.reorderHint)
-                    Text(L10n.Layout.sampleNotice)
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                Text(L10n.Layout.reorderHint)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .topLeading)

@@ -27,21 +27,14 @@ struct SettingsStoreTests {
         #expect(store.launchAtLogin == false)
     }
 
-    @Test func showSecondRowDefaultsToTrue() {
-        let store = SettingsStore(defaults: makeDefaults())
-        #expect(store.showSecondRowAutomatically == true)
-    }
-
     @Test func changesArePersistedAcrossStores() {
         let defaults = makeDefaults()
 
         let store = SettingsStore(defaults: defaults)
         store.launchAtLogin = true
-        store.showSecondRowAutomatically = false
 
-        // A new store over the same domain must observe the saved values.
+        // A new store over the same domain must observe the saved value.
         let reloaded = SettingsStore(defaults: defaults)
         #expect(reloaded.launchAtLogin == true)
-        #expect(reloaded.showSecondRowAutomatically == false)
     }
 }

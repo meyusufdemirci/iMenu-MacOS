@@ -17,27 +17,18 @@ import ApplicationServices
 /// and the user to have granted **Accessibility** permission — without it,
 /// `fetchItems()` throws `AppError.permissionDenied` so the Layout page can prompt.
 ///
+/// It only ever **reads** the menu bar: it enumerates and reports items, and never
+/// presses, moves, hides, or otherwise controls them.
+///
 /// Beyond enumerating, it runs `MenuBarClipDetector` over the items' frames and the
 /// menu-bar screen's geometry and logs how many are actually **clipped** (behind
-/// the notch or off the right edge) — the runtime side of FR1. The classification
-/// itself is pure and unit-tested; this reader is the AppKit glue that feeds it.
+/// the notch or off the right edge). The classification itself is pure and
+/// unit-tested; this reader is the AppKit glue that feeds it.
 ///
 /// The Accessibility API exposes titles and positions but not the rendered status
 /// icon, so items carry their owning app's `bundleIdentifier` and the view draws
 /// the app's icon.
-///
-/// It also **activates** items on demand (`MenuBarItemActivating`, PRD FR3 / US2):
-/// each fetch retains the live `AXUIElement`s it read, keyed by the same id the
-/// descriptor carries, so a click on a second-row tile can press the real item —
-/// even one clipped behind the notch, since `kAXPressAction` doesn't depend on the
-/// item being on screen. A reference type because that element registry is
-/// mutable state shared across a fetch and a later press.
-final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemActivating, MenuBarItemLocating {
-
-    /// The live elements from the most recent fetch, keyed by descriptor id, so a
-    /// tapped tile can be pressed. Refreshed wholesale on every `fetchItems()`;
-    /// handles for items that have since gone away simply fail to press.
-    private var elements: [String: AXUIElement] = [:]
+final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
 
     func fetchItems() throws -> [MenuBarItemDescriptor] {
         guard AXIsProcessTrusted() else {
@@ -46,7 +37,6 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemAct
 
         let ownPID = ProcessInfo.processInfo.processIdentifier
         var positioned: [(item: MenuBarItemDescriptor, frame: CGRect)] = []
-        var freshElements: [String: AXUIElement] = [:]
 
         for app in NSWorkspace.shared.runningApplications {
             // Skip apps that can't own menu bar items, and iMenu itself.
@@ -75,44 +65,12 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemAct
                     ),
                     frame
                 ))
-                freshElements[identity] = child
             }
         }
 
-        elements = freshElements
         let sorted = positioned.sorted { $0.frame.minX < $1.frame.minX }
         logClipDetection(frames: sorted.map(\.frame))
         return sorted.map(\.item)
-    }
-
-    /// Presses the menu bar item with `id` through the Accessibility API, opening
-    /// its menu at the real item's location. Uses `kAXPressAction`, which works
-    /// even when the item is clipped off-screen — the whole point of the second
-    /// row. Throws `AppError.menuBarItemActivationFailed` when the item is unknown
-    /// (never fetched, or gone since) or the press is rejected.
-    func activate(id: String) throws {
-        guard AXIsProcessTrusted() else {
-            throw AppError.permissionDenied
-        }
-        guard let element = elements[id] else {
-            throw AppError.menuBarItemActivationFailed
-        }
-        guard AXUIElementPerformAction(element, kAXPressAction as CFString) == .success else {
-            throw AppError.menuBarItemActivationFailed
-        }
-        AppLogger.shared.info("Activated a menu bar item", category: .menuBar)
-    }
-
-    // MARK: - Locating
-
-    /// The live frame of the item with `id`, re-read from the `AXUIElement` retained
-    /// during the last fetch — so a synthesized ⌘-drag grabs the item where it sits
-    /// *now*, not where the Layout page last saw it (milestones 0.5 path (a)).
-    /// `nil` when the id is unknown (never fetched, or gone since) or its position
-    /// can't be read. Top-left-origin global coordinates, same as `CGEvent`.
-    func frame(of id: String) -> CGRect? {
-        guard let element = elements[id] else { return nil }
-        return copyFrame(of: element)
     }
 
     // MARK: - AX helpers
@@ -160,11 +118,10 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemAct
     // MARK: - Clip detection (glue)
 
     /// Classifies the fetched items' frames against the menu-bar screen and logs
-    /// how many are clipped — the runtime proof of FR1. Best-effort: skips quietly
-    /// when no screen is available. The rule lives in `MenuBarClipDetector`; this
-    /// glue feeds it real geometry (untested here, like `SecondRowController` — it
-    /// needs live AX + a notch Mac to exercise). Only counts are logged, never item
-    /// titles, so nothing app/PII-identifying reaches the unified log.
+    /// how many are clipped. Best-effort: skips quietly when no screen is available.
+    /// The rule lives in `MenuBarClipDetector`; this glue feeds it real geometry
+    /// (untested here — it needs live AX + a notch Mac to exercise). Only counts are
+    /// logged, never item titles, so nothing app/PII-identifying reaches the log.
     private func logClipDetection(frames: [CGRect]) {
         guard let screen = menuBarScreen() else { return }
         let clipped = MenuBarClipDetector.classify(
@@ -177,8 +134,7 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding, MenuBarItemAct
     }
 
     /// The screen hosting the system menu bar — the primary display, at the global
-    /// coordinate origin. Which display hosts iMenu's *row* is a separate concern
-    /// (milestones 0.9); this only reads the bar's geometry for detection.
+    /// coordinate origin.
     private func menuBarScreen() -> NSScreen? {
         NSScreen.screens.first { $0.frame.origin == .zero } ?? NSScreen.main
     }

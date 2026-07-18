@@ -74,9 +74,9 @@ struct LayoutSectionView: View {
         )
         LayoutSectionView(
             title: "Hidden",
-            subtitle: "These move to the second row below your menu bar.",
+            subtitle: "Items you’ve set aside here.",
             items: [],
-            emptyPrompt: "Drag items here to show them in the second row.",
+            emptyPrompt: "Drag items here.",
             onDropOnItem: { _, _ in },
             onDropAtEnd: { _ in }
         )

@@ -40,8 +40,7 @@ struct AppErrorTests {
             .invalidInput(field: "f"),
             .notFound(resource: "r"),
             .persistence("p"),
-            .permissionDenied,
-            .menuBarItemActivationFailed
+            .permissionDenied
         ]
 
         for error in errors {
@@ -56,8 +55,7 @@ struct AppErrorTests {
             .invalidInput(field: "f"),
             .notFound(resource: "r"),
             .persistence("p"),
-            .permissionDenied,
-            .menuBarItemActivationFailed
+            .permissionDenied
         ]
 
         for error in errors {

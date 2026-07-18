@@ -14,11 +14,9 @@ import AppKit
 /// Prefers the owning app's icon (resolved from `bundleIdentifier`), since the
 /// Accessibility API can't hand us the real status-item glyph. When there's no
 /// app icon — sample data or apps we can't resolve — it falls back to an SF
-/// Symbol tinted with `fallbackColor` (white on the accent-colored Layout row;
-/// `.primary` on the material second row, so it adapts to light/dark like a real
-/// menu bar glyph). The `title` isn't shown; it's the accessibility label so the
-/// icon-only tile stays legible to VoiceOver. Reordering is driven by the
-/// enclosing row.
+/// Symbol tinted with `fallbackColor` (callers pass `.primary` so the glyph
+/// adapts to light/dark like a real menu bar item). The `title` isn't shown; it's
+/// the accessibility label so the icon-only tile stays legible to VoiceOver.
 struct MenuBarItemChip: View {
     private let title: String
     private let systemSymbolName: String?
