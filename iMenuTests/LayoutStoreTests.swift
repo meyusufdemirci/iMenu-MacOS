@@ -171,4 +171,73 @@ struct LayoutStoreTests {
         #expect(second.visibleItems.map(\.id) == ["b", "c"])
         #expect(second.hiddenItems.map(\.id) == ["a"])
     }
+
+    // MARK: - Refresh (re-sync to the real menu bar)
+
+    @Test func refreshAdoptsRealMenuOrderOverSavedOrder() {
+        let items = [item("a"), item("b"), item("c")]
+        let store = store(items, defaults: makeDefaults())
+        store.load()
+        store.move(id: "c", toPositionOf: "a") // saved visible order: [c, a, b]
+        #expect(store.visibleItems.map(\.id) == ["c", "a", "b"])
+
+        store.refresh() // the real fetch order is [a, b, c]
+        #expect(store.visibleItems.map(\.id) == ["a", "b", "c"])
+        #expect(store.state == .loaded)
+    }
+
+    @Test func refreshPreservesTheHiddenSplit() {
+        let items = [item("a"), item("b"), item("c")]
+        let store = store(items, defaults: makeDefaults())
+        store.load()
+        store.move(id: "b", toEndOf: .hidden) // visible: [a, c], hidden: [b]
+
+        store.refresh()
+        #expect(store.visibleItems.map(\.id) == ["a", "c"])
+        #expect(store.hiddenItems.map(\.id) == ["b"])
+    }
+
+    @Test func refreshPersistsTheRealOrderAcrossStores() {
+        let defaults = makeDefaults()
+        let items = [item("a"), item("b"), item("c")]
+
+        let first = store(items, defaults: defaults)
+        first.load()
+        first.move(id: "c", toPositionOf: "a") // saved visible order: [c, a, b]
+        first.refresh()                        // adopts the real order [a, b, c] and saves it
+
+        // A new store over the same domain restores the refreshed (real) order,
+        // proving refresh persisted it rather than the earlier manual order.
+        let reloaded = store(items, defaults: defaults)
+        reloaded.load()
+        #expect(reloaded.visibleItems.map(\.id) == ["a", "b", "c"])
+    }
+
+    @Test func refreshRestoresSavedHiddenSplitAfterAFailedLoad() {
+        let defaults = makeDefaults()
+        let items = [item("a"), item("b"), item("c")]
+
+        // Establish a saved split, then simulate a load that cleared the items
+        // (e.g. permission was revoked) before regaining access on refresh.
+        let seed = store(items, defaults: defaults)
+        seed.load()
+        seed.move(id: "b", toEndOf: .hidden) // saved split: hidden = [b]
+
+        let store = self.store(items, defaults: defaults)
+        // Refresh without a prior successful load must still honor the saved split.
+        store.refresh()
+        #expect(store.visibleItems.map(\.id) == ["a", "c"])
+        #expect(store.hiddenItems.map(\.id) == ["b"])
+    }
+
+    @Test func refreshSurfacesProviderFailureAsError() {
+        let store = LayoutStore(
+            provider: StubProvider(result: .failure(.permissionDenied)),
+            defaults: makeDefaults()
+        )
+        store.refresh()
+        #expect(store.visibleItems.isEmpty)
+        #expect(store.hiddenItems.isEmpty)
+        #expect(store.state == .failed(.permissionDenied))
+    }
 }

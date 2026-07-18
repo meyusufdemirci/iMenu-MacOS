@@ -30,7 +30,9 @@ struct LayoutView: View {
             .toolbar {
                 ToolbarItem {
                     Button {
-                        store.load()
+                        // Re-sync to the real menu bar: adopt its current order and
+                        // save it, rather than restoring the previously saved order.
+                        store.refresh()
                     } label: {
                         Label(L10n.Layout.refresh, systemImage: "arrow.clockwise")
                     }

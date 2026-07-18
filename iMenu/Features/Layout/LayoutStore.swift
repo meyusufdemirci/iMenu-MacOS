@@ -22,9 +22,10 @@ import Observation
 /// and the order are persisted to an **injected** `UserDefaults`, but none of it
 /// touches the real macOS menu bar — the store never presses, moves, or hides the
 /// actual items. The saved arrangement is the durable *intent*: it's applied on
-/// every load, so an item keeps its section and place across launches. Items that
-/// appear later default to **Visible** and are appended after the ones already
-/// arranged.
+/// every `load()`, so an item keeps its section and place across launches. Items
+/// that appear later default to **Visible** and are appended after the ones already
+/// arranged. `refresh()` goes the other way — it re-adopts the real menu bar's
+/// current order and saves that as the new arrangement.
 @Observable
 final class LayoutStore {
 
@@ -67,16 +68,40 @@ final class LayoutStore {
         self.defaults = defaults
     }
 
-    /// Fetches the current items and applies the saved split and order. Failures
+    /// Fetches the current items and applies the **saved** split and order, so the
+    /// user's arrangement is restored. Used on appear, retry, and launch. Failures
     /// surface as an `AppError` in `state` and are logged; they never crash the
     /// page.
     func load() {
+        fetch { fetched in
+            applyPartition(to: fetched)
+            AppLogger.shared.info("Loaded \(visibleItems.count + hiddenItems.count) menu bar items", category: .menuBar)
+        }
+    }
+
+    /// Re-syncs to the real menu bar: fetches the current items, keeps the saved
+    /// visible/hidden split, but **adopts the real menu bar's current left-to-right
+    /// order** — discarding any previously saved manual order — and **persists** it.
+    /// This is the refresh action: unlike `load()`, it makes the saved arrangement
+    /// match how the items are actually ordered in the menu bar right now. Failures
+    /// surface as an `AppError` in `state` and are logged; they never crash the page.
+    func refresh() {
+        fetch { fetched in
+            adoptRealOrder(of: fetched)
+            persist()
+            AppLogger.shared.info("Refreshed \(visibleItems.count + hiddenItems.count) menu bar items from the real menu bar", category: .menuBar)
+        }
+    }
+
+    /// Shared fetch + state-transition + error handling for `load()`/`refresh()`.
+    /// On success runs `apply` (which arranges the sections and logs); on failure
+    /// clears both sections, records the `AppError` in `state`, and logs it.
+    private func fetch(_ apply: (_ fetched: [MenuBarItemDescriptor]) -> Void) {
         state = .loading
         do {
             let fetched = try provider.fetchItems()
-            applyPartition(to: fetched)
+            apply(fetched)
             state = .loaded
-            AppLogger.shared.info("Loaded \(visibleItems.count + hiddenItems.count) menu bar items", category: .menuBar)
         } catch let error as AppError {
             visibleItems = []
             hiddenItems = []
@@ -152,6 +177,28 @@ final class LayoutStore {
 
         hiddenItems = ordered(hidden, by: hiddenOrder)
         visibleItems = ordered(visible, by: visibleOrder)
+    }
+
+    /// Splits `fetched` into the two sections using the **saved** visible/hidden
+    /// assignment (read from persistence, so it survives a prior failed load that
+    /// cleared the in-memory sections), but orders each section by the **fetch
+    /// order** — i.e. the real menu bar's current left-to-right order — discarding
+    /// any saved manual rank. Used by `refresh()` to re-sync to the live menu bar.
+    private func adoptRealOrder(of fetched: [MenuBarItemDescriptor]) {
+        let hiddenIDs = Set(defaults.array(forKey: Keys.hiddenOrder) as? [String] ?? [])
+
+        var hidden: [MenuBarItemDescriptor] = []
+        var visible: [MenuBarItemDescriptor] = []
+        for item in fetched {
+            if hiddenIDs.contains(item.id) {
+                hidden.append(item)
+            } else {
+                visible.append(item)
+            }
+        }
+
+        hiddenItems = hidden
+        visibleItems = visible
     }
 
     /// Sorts `items` by `savedOrder`: known items by their saved rank, newcomers
