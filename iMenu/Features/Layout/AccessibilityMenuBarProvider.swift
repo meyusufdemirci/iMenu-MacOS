@@ -49,7 +49,25 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
             let ownerName = app.localizedName ?? app.bundleIdentifier ?? "—"
 
             for (index, child) in children.enumerated() {
-                let title = copyString(child, attribute: kAXTitleAttribute as String) ?? ""
+                let rawTitle = copyString(child, attribute: kAXTitleAttribute as String)
+                let description = copyString(child, attribute: kAXDescriptionAttribute as String)
+                let identifier = copyString(child, attribute: "AXIdentifier")
+
+                // Control Center reserves anonymous, disabled slots for modules that
+                // aren't currently in the menu bar. They carry no title, description,
+                // or identifier and would otherwise all surface as their owner
+                // ("Control Center"), so drop these empty placeholders.
+                let isEnabled = copyBool(child, attribute: kAXEnabledAttribute as String) ?? true
+                if rawTitle == nil, description == nil, identifier == nil, isEnabled == false { continue }
+
+                // Most Control Center items have an empty AXTitle; their readable
+                // name lives in AXDescription (the label VoiceOver announces), so
+                // resolve across both rather than falling back to the owner.
+                let title = MenuBarItemNaming.resolveTitle(title: rawTitle, description: description)
+                // Control Center items all share one app icon, so map the known
+                // system items to a representative glyph (the real menu bar icon):
+                // an SF Symbol, or an app-drawn one for items SF Symbols can't cover.
+                let symbol = MenuBarItemSymbols.symbolName(identifier: identifier, bundleIdentifier: app.bundleIdentifier)
                 // Fall back to an index-derived x (zero size) when the frame is
                 // unreadable, so ordering is preserved even if we can't measure it.
                 let frame = copyFrame(of: child) ?? CGRect(x: CGFloat(index), y: 0, width: 0, height: 0)
@@ -60,7 +78,7 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
                         id: identity,
                         title: title,
                         ownerName: ownerName,
-                        systemSymbolName: nil,
+                        systemSymbolName: symbol,
                         bundleIdentifier: app.bundleIdentifier
                     ),
                     frame
@@ -95,6 +113,14 @@ final class AccessibilityMenuBarProvider: MenuBarLayoutProviding {
         var value: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, attribute as CFString, &value) == .success else { return nil }
         return value as? String
+    }
+
+    /// Reads a boolean-valued attribute (e.g. `AXEnabled`). `nil` when it can't be read.
+    private func copyBool(_ element: AXUIElement, attribute: String) -> Bool? {
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element, attribute as CFString, &value) == .success,
+              let value else { return nil }
+        return (value as? NSNumber)?.boolValue
     }
 
     /// Reads the element's on-screen frame (position + size). Used to order items
