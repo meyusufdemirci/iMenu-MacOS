@@ -4,14 +4,14 @@ Guidance for Claude Code (and any contributor) when working in this repository.
 
 ## Project
 
-**iMenu** — a free, open-source, native macOS **menu bar overflow manager**.
+**iMenu** — a free, open-source, native macOS **menu bar manager**.
 macOS silently clips menu bar items that don't fit the available width (a problem
-the notch makes worse). Instead of *hiding* the overflow behind a click-to-reveal
-popover the way incumbents (Ice, Bartender, Hidden Bar) do, iMenu **surfaces** it:
-it renders the clipped items in a **persistent second row directly below the
-system menu bar**, toggled from a single menu bar control. The bet is that for
-people who live in their menu bar all day, *seeing* everything beats *digging*
-for it.
+the notch makes worse), and gives users no way to reorder or hide items short of
+⌘-dragging them by hand. iMenu is a **Layout editor that edits the real menu bar
+in place**: a window with **Visible/Hidden** sections where dragging reorders the
+real items and moving one to Hidden tucks it behind iMenu's separator, plus a
+**chevron menu bar toggle** that shows or hides the hidden group in one click —
+the separator-expansion mechanic the incumbents (Ice, Bartender, Hidden Bar) use.
 
 | | |
 |---|---|
@@ -31,14 +31,15 @@ positioning, user stories, milestones); the essentials for working in this repo
 are below. **Keep this file consistent with those docs** — if they change, update
 here.
 
-### Current status — reading proven; real reordering coded, unproven on device
+### Current status — reading, reordering, and hiding all proven on device
 
 The product has narrowed from the original "second row" idea to a **Layout
 editor that edits the real menu bar in place**. The history matters: an earlier
 spike built a persistent second row plus `AXPress` click-forwarding, then
 `7edb760` **removed all of it** (second row, click-forwarding, divider-collapse),
-reducing Layout to a local-only organizer. The current direction re-adds a real
-menu bar effect — **reordering** — via a different mechanic.
+reducing Layout to a local-only organizer. Since then two real menu bar effects
+have been added and **validated on real hardware**: **reordering** (synthesized
+⌘-drag) and **hiding** (separator expansion behind a chevron toggle).
 
 - **Reading other apps' items works.** `AccessibilityMenuBarProvider`
   enumerates every running app's `AXExtrasMenuBar` through the Accessibility
@@ -48,24 +49,37 @@ menu bar effect — **reordering** — via a different mechanic.
   **permission cost**: the app must run **un-sandboxed** and the user must grant
   **Accessibility**. The provider also retains the live `AXUIElement`s so it can
   re-read a single item's *current* frame on demand (`MenuBarItemLocating`).
-- **Reordering the real menu bar is coded.** Reordering an item **within the
-  Visible section** on the Layout page drives the real bar: `LayoutStore` hands
-  the move to `SynthesizedMenuBarItemReorderer`, which reads the item's and its
-  new neighbor's live frames and posts a **synthesized ⌘-drag** (`CGEvent`, in
-  `SynthesizedMenuBarItemRelocator`) to physically relocate the item — automating
-  the ⌘-drag a user would do by hand. Moving an item to **Hidden** stays a local
-  list edit only.
+- **Reordering the real menu bar works (validated on device).** Reordering an
+  item **within the Visible section** on the Layout page drives the real bar:
+  `LayoutStore` hands the move to `SynthesizedMenuBarItemReorderer`, which reads
+  the item's and its new neighbor's live frames and posts a **synthesized ⌘-drag**
+  (`CGEvent`, in `SynthesizedMenuBarItemRelocator`) to physically relocate the
+  item — automating the ⌘-drag a user would do by hand.
+- **Hiding works (validated on device).** iMenu owns two status items: an
+  always-visible **chevron toggle** and a thin **`│` separator** to its left
+  (`MenuBarStatusItemController`, replacing the earlier SwiftUI `MenuBarExtra`).
+  Hidden items live to the separator's **left**; clicking the chevron expands the
+  separator's `.length` (~10000pt), pushing everything on its left off-screen —
+  the classic overflow-manager mechanic, since macOS has **no API to hide another
+  app's status item**. Moving an item between **Visible and Hidden** on the
+  Layout page drags the real item across the separator (`SynthesizedMenuBarHider`
+  via the `MenuBarHiding` seam); the first hide also parks the separator left of
+  the visible items. The toggle itself is instant (a length change, no cursor
+  movement) and its state persists (`MenuBarHideController`). The AppKit menu
+  reaches SwiftUI's `openWindow` through the `WindowActions` bridge.
 
-> ⚠️ **The synthesized ⌘-drag is the fragile bet — coded but unproven on device.**
-> Whether macOS honors a *synthesized* ⌘-drag for every third-party item is
-> unverified; the step count, per-step delay, drop margin, and whether the
-> explicit Command key events help are the tuning knobs. It **moves the real
-> cursor** (~150ms) by design, so it runs on a user-initiated Layout drop, not
-> silently. **Also unverified:** OS-pinned items (clock, Control Center) that
-> won't move, and behavior across the notch, multiple/external displays, Stage
-> Manager, Spaces, and full-screen. Assume it may need re-fixing on each major
-> macOS release — treat it as unproven until exercised on real hardware. The pure
-> geometry and store/coordinator logic are unit-tested; only the CGEvent post is not.
+> ⚠️ **Hard-won on-device lessons — do not regress these.**
+> Status-item **creation order is not reliable**: the chevron must be assigned to
+> whichever of the two owned items is *actually rightmost* (compare
+> `button?.window?.frame.maxX`), or expanding the separator strands the toggle
+> off-screen. The separator needs a **visible glyph** (`│`): a 1px invisible item
+> can't be grabbed by the parking ⌘-drag, which then grabs the chevron instead.
+> The ⌘-drag hides the cursor and restores it, but tuning knobs (step count,
+> per-step delay, drop margin) may need re-tuning per macOS release. **Still
+> unverified:** OS-pinned items (clock, Control Center), multiple/external
+> displays, Stage Manager, Spaces, full-screen; re-establishing the arrangement
+> after other apps relaunch (v1 is manual: the user re-hides once). The
+> store/coordinator logic is unit-tested; the `NSStatusItem`/CGEvent glue is not.
 
 - **Working conventions** below are **in force** — the code follows them (TDD,
   components, `L10n`, `AppError`, `AppLogger`). The throwaway-spike exemption no
@@ -75,14 +89,16 @@ menu bar effect — **reordering** — via a different mechanic.
   split), rather than auto-detecting overflow.
 
 > **Docs to reconcile:** `Documents/prd.md` and `Documents/one-pager.md` still
-> carry the original "gated on feasibility spike / do not build product
-> engineering" framing. Update them when you next touch the product docs so they
-> match this state.
+> carry the original "persistent second row" concept and the "gated on
+> feasibility spike / do not build product engineering" framing. The shipped
+> direction is the Layout editor + separator-hide + chevron toggle described
+> above. Update them when you next touch the product docs so they match.
 
 ### Non-goals (v1)
 
 - Not a full menu bar *customization* suite (icon theming, spacing editors,
-  per-app hide rules, search) — v1 wins on the second-row idea, not breadth.
+  per-app hide rules, search) — v1 wins on the Layout editor + one-click
+  hide toggle, not breadth.
 - No paid tier, licensing, telemetry-for-revenue, accounts, or cloud sync.
 - No Mac App Store build; no Windows / Linux / iOS.
 
@@ -123,12 +139,13 @@ xcodebuild -list -project iMenu.xcodeproj
 
 ```
 iMenu/
-  iMenuApp.swift              # @main: owns shared state, defines the Window + MenuBarExtra
+  iMenuApp.swift              # @main: owns shared state, the Window + the menu bar controller
   MainView.swift              # Root window: NavigationSplitView side menu (keep it thin)
   Navigation/
     SidebarItem.swift         # The side-menu pages (Layout, Permissions, Settings, About)
     AppNavigation.swift       # @Observable selected-page state, shared by window + menu bar
     WindowID.swift            # Stable id for the single main window
+    WindowActions.swift       # Bridge: AppKit menu → SwiftUI openWindow
   Features/                   # One folder per screen/feature
     Layout/
       LayoutView.swift              # Layout page: Visible/Hidden drag-between sections
@@ -144,12 +161,16 @@ iMenu/
       MenuBarItemLocating.swift            # Seam: an item's current on-screen frame by id
       MenuBarItemRelocating.swift          # Seam: the low-level "⌘-drag from A to B" intent
       SynthesizedMenuBarItemRelocator.swift # Live impl: posts the ⌘-drag CGEvents
+      MenuBarHiding.swift                  # Store's seam: hide/show item X, park separator (+ Null impl)
+      SynthesizedMenuBarHider.swift        # Coordinator: drags items across the separator
+      SeparatorControlling.swift           # Seam: expand/collapse the separator + its frame (+ Null impl)
+      StatusBarSeparator.swift             # Live impl: the │ width-expander NSStatusItem
+      MenuBarHideController.swift          # @Observable hide state; persists, drives the separator
+      MenuBarStatusItemController.swift    # AppKit owner: chevron toggle + separator + right-click menu
     Permissions/
       PermissionsView.swift         # Permissions page (Accessibility status + grant)
       PermissionsStore.swift        # @Observable permission state
       AccessibilityAuthorizing.swift  # Authorizer protocol + system-backed impl
-    MenuBar/
-      MenuBarContent.swift          # The MenuBarExtra menu (Open / Settings / About / Quit)
     Settings/
       SettingsStore.swift           # @Observable, UserDefaults-backed preferences
       SettingsView.swift            # Settings page — composes components

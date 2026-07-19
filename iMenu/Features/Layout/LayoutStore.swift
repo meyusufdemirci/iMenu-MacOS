@@ -20,9 +20,11 @@ import Observation
 /// Reordering an item **within Visible** edits the real macOS menu bar: the store hands
 /// the move to an **injected** `MenuBarItemReordering`, which synthesizes a ⌘-drag to
 /// physically relocate the real item next to its new neighbor (best-effort — some system
-/// items can't be moved). The **Hidden** section stays a local organizer: moving an item
-/// between Visible and Hidden only regroups this list, it doesn't press, hide, or move
-/// the real item.
+/// items can't be moved). Moving an item **between Visible and Hidden** also drives the
+/// real bar, through an **injected** `MenuBarHiding`: the item is dragged to the hidden
+/// side of iMenu's separator (or back to the visible side), so the menu bar toggle can
+/// push the hidden ones off-screen. Both effects are best-effort and unproven items are
+/// simply left in place.
 ///
 /// Both the section assignment and the order are persisted to an **injected**
 /// `UserDefaults`. The saved arrangement is the durable *intent*: it's applied on every
@@ -59,6 +61,11 @@ final class LayoutStore {
     @ObservationIgnored private let provider: MenuBarLayoutProviding
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let reorderer: MenuBarItemReordering
+    @ObservationIgnored private var hider: MenuBarHiding
+
+    /// Whether the separator has been parked left of the visible items yet this session.
+    /// Done once, on the first hide, so the default arrangement is "everything visible".
+    @ObservationIgnored private var didParkSeparator = false
 
     /// - Parameters:
     ///   - provider: Where items come from. Defaults to the real Accessibility
@@ -69,13 +76,18 @@ final class LayoutStore {
     ///     synthesized ⌘-drag when the provider can locate live items (the real
     ///     Accessibility provider); otherwise a no-op, so a store over sample/stub data
     ///     stays a purely local list. Tests inject a spy.
+    ///   - hider: Applies a Visible↔Hidden move to the real menu bar (dragging the item
+    ///     across the separator). Defaults to a no-op; the app injects the live hider via
+    ///     `attachHider(_:)` once the separator exists after launch. Tests inject a spy.
     init(
         provider: MenuBarLayoutProviding = AccessibilityMenuBarProvider(),
         defaults: UserDefaults = .standard,
-        reorderer: MenuBarItemReordering? = nil
+        reorderer: MenuBarItemReordering? = nil,
+        hider: MenuBarHiding = NullMenuBarHiding()
     ) {
         self.provider = provider
         self.defaults = defaults
+        self.hider = hider
         if let reorderer {
             self.reorderer = reorderer
         } else if let locator = provider as? MenuBarItemLocating {
@@ -86,6 +98,13 @@ final class LayoutStore {
         } else {
             self.reorderer = NullMenuBarItemReordering()
         }
+    }
+
+    /// Injects the live `MenuBarHiding` after construction — used by the app, which can
+    /// only build it once the menu bar separator exists (created after launch). Tests
+    /// inject their spy through `init` instead.
+    func attachHider(_ hider: MenuBarHiding) {
+        self.hider = hider
     }
 
     /// Fetches the current items and applies the **saved** split and order, so the
@@ -159,7 +178,7 @@ final class LayoutStore {
         persist()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
 
-        applyRealReorderIfNeeded(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
+        applyRealEffect(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
     }
 
     /// Moves the item identified by `draggedID` to the **end** of `section` —
@@ -175,23 +194,42 @@ final class LayoutStore {
         persist()
         AppLogger.shared.info("Moved a menu bar item", category: .menuBar)
 
-        applyRealReorderIfNeeded(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
+        applyRealEffect(movedID: draggedID, sourceSection: sourceSection, visibleOrderBefore: visibleOrderBefore)
     }
 
-    // MARK: - Reflecting a Visible reorder onto the real menu bar
+    // MARK: - Reflecting a move onto the real menu bar
 
-    /// Mirrors a reorder **within the Visible section** onto the real macOS menu bar by
-    /// asking the `reorderer` to move the real item next to its new neighbor. Only a pure
-    /// intra-Visible reorder drives the real bar — the item was Visible, is still Visible,
-    /// and the Visible order actually changed. Cross-section moves (Visible↔Hidden) and
-    /// no-op reorders leave the real bar untouched.
+    /// Routes a completed move to its real-menu-bar effect, based on where the item came
+    /// from and where it landed:
+    ///
+    /// - **Visible → Visible** — a reorder: nudge the real item next to its new neighbor.
+    /// - **Visible → Hidden** — a hide: park the separator (once) and drag the real item
+    ///   to the separator's left, so a toggle pushes it off-screen.
+    /// - **Hidden → Visible** — a show: drag the real item back to the separator's right.
+    /// - **Hidden → Hidden** and unknown ids — left local; the real bar is untouched.
+    private func applyRealEffect(movedID: String, sourceSection: Section?, visibleOrderBefore: [String]) {
+        switch (sourceSection, section(of: movedID)) {
+        case (.visible, .visible):
+            applyVisibleReorderIfNeeded(movedID: movedID, visibleOrderBefore: visibleOrderBefore)
+        case (.visible, .hidden):
+            parkSeparatorIfNeeded()
+            hider.moveToHidden(id: movedID)
+        case (.hidden, .visible):
+            hider.moveToVisible(id: movedID)
+        default:
+            break
+        }
+    }
+
+    /// Mirrors a reorder **within the Visible section** onto the real menu bar by asking
+    /// the `reorderer` to move the real item next to its new neighbor. Only fires when the
+    /// Visible order actually changed.
     ///
     /// The move is expressed relative to the neighbor the item now sits beside: dropped
     /// **left of** the item now to its right, or — when it's become the rightmost Visible
     /// item — **right of** the item now to its left. A lone Visible item has no neighbor
     /// to anchor to, so nothing is moved.
-    private func applyRealReorderIfNeeded(movedID: String, sourceSection: Section?, visibleOrderBefore: [String]) {
-        guard sourceSection == .visible, section(of: movedID) == .visible else { return }
+    private func applyVisibleReorderIfNeeded(movedID: String, visibleOrderBefore: [String]) {
         guard visibleItems.map(\.id) != visibleOrderBefore else { return }
         guard let index = visibleItems.firstIndex(where: { $0.id == movedID }) else { return }
 
@@ -200,6 +238,15 @@ final class LayoutStore {
         } else if index >= 1 {
             reorderer.move(id: movedID, to: .rightOf(visibleItems[index - 1].id))
         }
+    }
+
+    /// Parks the separator immediately left of the leftmost still-visible item, once per
+    /// session — so before any hide the default is "everything visible" (all items to the
+    /// separator's right), and hidden items then accumulate to its left.
+    private func parkSeparatorIfNeeded() {
+        guard didParkSeparator == false else { return }
+        didParkSeparator = true
+        hider.positionSeparator(leftOfLeftmostOf: visibleItems.map(\.id))
     }
 
     // MARK: - Persistence

@@ -34,6 +34,18 @@ struct LayoutStoreTests {
         }
     }
 
+    /// Records the real-menu-bar hide/show/park requests the store makes, instead of
+    /// synthesizing a ⌘-drag — so tests assert *which* item is hidden or shown, and how
+    /// the separator is parked, without touching the real menu bar.
+    private final class SpyHider: MenuBarHiding {
+        private(set) var hidden: [String] = []
+        private(set) var shown: [String] = []
+        private(set) var parkCalls: [[String]] = []
+        func moveToHidden(id: String) { hidden.append(id) }
+        func moveToVisible(id: String) { shown.append(id) }
+        func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) { parkCalls.append(visibleIDs) }
+    }
+
     /// A fresh, empty `UserDefaults` domain unique to each test.
     private func makeDefaults() -> UserDefaults {
         let suiteName = "LayoutStoreTests-\(UUID().uuidString)"
@@ -54,6 +66,12 @@ struct LayoutStoreTests {
     /// an intra-Visible reorder triggers.
     private func store(_ items: [MenuBarItemDescriptor], defaults: UserDefaults, reorderer: SpyReorderer) -> LayoutStore {
         LayoutStore(provider: StubProvider(result: .success(items)), defaults: defaults, reorderer: reorderer)
+    }
+
+    /// A store wired to a spy hider, so a test can watch the real-menu-bar hide/show/park
+    /// requests a cross-section move triggers.
+    private func store(_ items: [MenuBarItemDescriptor], defaults: UserDefaults, hider: SpyHider) -> LayoutStore {
+        LayoutStore(provider: StubProvider(result: .success(items)), defaults: defaults, hider: hider)
     }
 
     // MARK: - Loading & partition
@@ -287,24 +305,42 @@ struct LayoutStoreTests {
         #expect(spy.moves[0].side == .rightOf("c"))
     }
 
-    @Test func movingAVisibleItemToHiddenDoesNotTouchTheRealBar() {
-        let spy = SpyReorderer()
-        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)
+    @Test func movingAVisibleItemToHiddenHidesItOnTheRealBar() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), hider: hider)
         store.load()
 
-        store.move(id: "b", toEndOf: .hidden) // a cross-section move, not a reorder
+        store.move(id: "b", toEndOf: .hidden) // a cross-section move: hide "b"
 
-        #expect(spy.moves.isEmpty)
+        #expect(hider.hidden == ["b"])
+        #expect(hider.shown.isEmpty)
+        // The separator is parked once, before the first hide, anchored to the items that
+        // stay visible ("a" and "c").
+        #expect(hider.parkCalls.count == 1)
+        #expect(hider.parkCalls[0] == ["a", "c"])
     }
 
-    @Test func unhidingAnItemDoesNotTouchTheRealBar() {
-        let spy = SpyReorderer()
-        let store = store([item("a"), item("b")], defaults: makeDefaults(), reorderer: spy)
+    @Test func unhidingAnItemShowsItOnTheRealBar() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
         store.load()
-        store.move(id: "a", toEndOf: .hidden)   // visible: [b], hidden: [a] — no real move
-        store.move(id: "a", toEndOf: .visible)  // hidden → visible: an unhide, not a reorder
+        store.move(id: "a", toEndOf: .hidden)   // visible: [b], hidden: [a] — a hide
+        store.move(id: "a", toEndOf: .visible)  // hidden → visible: an unhide
 
-        #expect(spy.moves.isEmpty)
+        #expect(hider.hidden == ["a"])
+        #expect(hider.shown == ["a"])
+    }
+
+    @Test func separatorIsParkedOnlyOnceAcrossMultipleHides() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), hider: hider)
+        store.load()
+
+        store.move(id: "a", toEndOf: .hidden)
+        store.move(id: "b", toEndOf: .hidden)
+
+        #expect(hider.hidden == ["a", "b"])
+        #expect(hider.parkCalls.count == 1)   // parked once, on the first hide
     }
 
     @Test func aNoOpReorderDoesNotTouchTheRealBar() {

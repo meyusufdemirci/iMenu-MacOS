@@ -13,13 +13,14 @@ import SwiftUI
 /// two sections you can **drag between**:
 ///
 /// - **Visible** — where every item starts.
-/// - **Hidden** — where you can park items.
+/// - **Hidden** — items tucked behind iMenu's separator, toggled by the menu bar chevron.
 ///
-/// Reordering within **Visible** edits your real macOS menu bar (the store synthesizes
-/// a ⌘-drag to move the real item); moving between **Visible** and **Hidden** only
-/// regroups this local list. Kept thin: it switches on the store's load state and
-/// delegates each section to a `LayoutSectionView`, wiring the drops to the store's
-/// move actions.
+/// Both edits drive your real macOS menu bar: reordering within **Visible** synthesizes
+/// a ⌘-drag to move the real item next to its new neighbor, and moving between
+/// **Visible** and **Hidden** drags the real item across iMenu's separator so the
+/// chevron toggle can push the hidden group off-screen. Kept thin: it switches on the
+/// store's load state and delegates each section to a `LayoutSectionView`, wiring the
+/// drops to the store's move actions.
 struct LayoutView: View {
 
     /// The source of truth for the page's items, state, and reordering.

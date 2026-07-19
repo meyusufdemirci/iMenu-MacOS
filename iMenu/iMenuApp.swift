@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 @main
 struct iMenuApp: App {
@@ -25,17 +26,29 @@ struct iMenuApp: App {
     /// it's re-checked and stays consistent across the window and the menu bar.
     @State private var permissionsStore: PermissionsStore
 
+    /// The Accessibility provider, shared so the Layout store reads items through the
+    /// same instance the hider locates their live positions through.
+    @State private var provider: AccessibilityMenuBarProvider
+
+    /// Bridge that lets the AppKit menu open/route the SwiftUI window.
+    @State private var windowActions = WindowActions()
+
+    /// Owns the menu bar chevron toggle + separator (replaces `MenuBarExtra`).
+    @State private var menuBar = MenuBarStatusItemController()
+
     init() {
         // Land on Permissions at launch when any required permission is still
         // missing, so the user is taken straight to granting it; otherwise Layout.
         let permissionsStore = PermissionsStore()
         let settings = SettingsStore()
-        // The Accessibility provider only reads other apps' menu bar items — iMenu
-        // shows them and never presses, moves, or hides them.
-        let layoutStore = LayoutStore(provider: AccessibilityMenuBarProvider())
+        // The Accessibility provider reads other apps' menu bar items and locates their
+        // live positions; shared between the Layout store and the hider.
+        let provider = AccessibilityMenuBarProvider()
+        let layoutStore = LayoutStore(provider: provider)
 
         _permissionsStore = State(initialValue: permissionsStore)
         _settings = State(initialValue: settings)
+        _provider = State(initialValue: provider)
         _layoutStore = State(initialValue: layoutStore)
         _navigation = State(initialValue: AppNavigation(
             selection: AppNavigation.launchSelection(allPermissionsGranted: permissionsStore.allGranted)
@@ -52,13 +65,47 @@ struct iMenuApp: App {
                 layoutStore: layoutStore,
                 permissionsStore: permissionsStore
             )
+            .modifier(WindowActionsBinder(actions: windowActions, navigation: navigation))
+            // Create the menu bar status items once, after launch, when the status
+            // bar is ready. `start` is idempotent, so re-appearance is a no-op.
+            .task {
+                let didStart = menuBar.start(menuActions: MenuBarStatusItemController.MenuActions(
+                    open: { windowActions.open?(nil) },
+                    openSettings: { windowActions.open?(.settings) },
+                    openAbout: { windowActions.open?(.about) },
+                    quit: { NSApplication.shared.terminate(nil) }
+                ))
+                // On the first start, let the Layout store drive hide/show on the same
+                // separator, locating items through the same provider it reads them from.
+                if didStart, let separator = menuBar.separator {
+                    layoutStore.attachHider(SynthesizedMenuBarHider(
+                        locator: provider,
+                        relocator: SynthesizedMenuBarItemRelocator(),
+                        separator: separator
+                    ))
+                }
+            }
         }
+    }
+}
 
-        // The menu bar control: a persistent icon whose menu opens/routes the
-        // window and can quit the app.
-        MenuBarExtra(L10n.App.name, systemImage: "menubar.rectangle") {
-            MenuBarContent(navigation: navigation)
+/// Captures SwiftUI's `openWindow` once the root view exists and hands it to
+/// `WindowActions`, so the AppKit menu can open and route the window without any
+/// SwiftUI dependency of its own.
+private struct WindowActionsBinder: ViewModifier {
+
+    let actions: WindowActions
+    let navigation: AppNavigation
+
+    @Environment(\.openWindow) private var openWindow
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            actions.open = { page in
+                if let page { navigation.show(page) }
+                openWindow(id: WindowID.main)
+                NSApplication.shared.activate()
+            }
         }
-        .menuBarExtraStyle(.menu)
     }
 }

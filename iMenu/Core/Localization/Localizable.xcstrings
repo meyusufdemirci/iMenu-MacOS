@@ -1,813 +1,847 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%lld" : {
-
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld": {},
+    "about.author": {
+      "comment": "Name of the app's author, shown on the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yusuf Demirci"
+          }
+        }
+      }
+    },
+    "about.free": {
+      "comment": "Note that the app is free, shown on the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu is completely free to use."
+          }
+        }
+      }
+    },
+    "about.link.github": {
+      "comment": "Label for the author's GitHub profile link",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub"
+          }
+        }
+      }
     },
-    "about.author" : {
-      "comment" : "Name of the app's author, shown on the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yusuf Demirci"
+    "about.link.linkedin": {
+      "comment": "Label for the author's LinkedIn profile link",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LinkedIn"
           }
         }
       }
     },
-    "about.free" : {
-      "comment" : "Note that the app is free, shown on the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu is completely free to use."
+    "about.link.x": {
+      "comment": "Label for the author's X (formerly Twitter) profile link",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "X"
           }
         }
       }
     },
-    "about.link.github" : {
-      "comment" : "Label for the author's GitHub profile link",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "GitHub"
+    "about.madeWithLove": {
+      "comment": "Sign-off shown with a heart icon at the bottom of the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Made with love"
           }
         }
       }
     },
-    "about.link.linkedin" : {
-      "comment" : "Label for the author's LinkedIn profile link",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LinkedIn"
+    "about.role": {
+      "comment": "The author's role, shown under their name on the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Developer"
           }
         }
       }
     },
-    "about.link.x" : {
-      "comment" : "Label for the author's X (formerly Twitter) profile link",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "X"
+    "app.name": {
+      "comment": "The application name, shown as the sidebar title",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu"
           }
         }
       }
     },
-    "about.madeWithLove" : {
-      "comment" : "Sign-off shown with a heart icon at the bottom of the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Made with love"
+    "error.invalidInput": {
+      "comment": "Description for AppError.invalidInput; %@ is the field name",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The value provided for %@ is not valid."
           }
         }
       }
     },
-    "about.role" : {
-      "comment" : "The author's role, shown under their name on the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Developer"
+    "error.menuBarItemReorderFailed": {
+      "comment": "Description for AppError.menuBarItemReorderFailed",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That menu bar item couldn’t be moved."
           }
         }
       }
     },
-    "app.name" : {
-      "comment" : "The application name, shown as the sidebar title",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu"
+    "error.notFound": {
+      "comment": "Description for AppError.notFound; %@ is the resource name",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We couldn’t find %@."
           }
         }
       }
     },
-    "error.invalidInput" : {
-      "comment" : "Description for AppError.invalidInput; %@ is the field name",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The value provided for %@ is not valid."
+    "error.permissionDenied": {
+      "comment": "Description for AppError.permissionDenied",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You don’t have permission to do that."
           }
         }
       }
     },
-    "error.menuBarItemReorderFailed" : {
-      "comment" : "Description for AppError.menuBarItemReorderFailed",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "That menu bar item couldn’t be moved."
+    "error.persistence": {
+      "comment": "Description for AppError.persistence; %@ is a developer detail",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving your data failed: %@"
           }
         }
       }
     },
-    "error.notFound" : {
-      "comment" : "Description for AppError.notFound; %@ is the resource name",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "We couldn’t find %@."
+    "error.recovery.generic": {
+      "comment": "Generic recovery suggestion",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please try again."
           }
         }
       }
     },
-    "error.permissionDenied" : {
-      "comment" : "Description for AppError.permissionDenied",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You don’t have permission to do that."
+    "error.recovery.invalidInput": {
+      "comment": "Recovery suggestion for an invalid-input error",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the highlighted field and try again."
           }
         }
       }
     },
-    "error.persistence" : {
-      "comment" : "Description for AppError.persistence; %@ is a developer detail",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saving your data failed: %@"
+    "error.recovery.menuBarItemReorder": {
+      "comment": "Recovery suggestion for a failed menu bar item reorder",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some items can’t be rearranged. Try moving a different item, or drag it in the menu bar by holding ⌘."
           }
         }
       }
     },
-    "error.recovery.generic" : {
-      "comment" : "Generic recovery suggestion",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please try again."
+    "error.recovery.permission": {
+      "comment": "Recovery suggestion for a permission error",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grant the required permission in System Settings and try again."
           }
         }
       }
     },
-    "error.recovery.invalidInput" : {
-      "comment" : "Recovery suggestion for an invalid-input error",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check the highlighted field and try again."
+    "error.unexpected": {
+      "comment": "Description for AppError.unexpected; %@ is a developer detail",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something unexpected happened: %@"
           }
         }
       }
     },
-    "error.recovery.menuBarItemReorder" : {
-      "comment" : "Recovery suggestion for a failed menu bar item reorder",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Some items can’t be rearranged. Try moving a different item, or drag it in the menu bar by holding ⌘."
+    "error.unknown": {
+      "comment": "Description for AppError.unknown",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An unknown error occurred."
           }
         }
       }
     },
-    "error.recovery.permission" : {
-      "comment" : "Recovery suggestion for a permission error",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Grant the required permission in System Settings and try again."
+    "home.refresh": {
+      "comment": "Title of the refresh button",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
           }
         }
       }
     },
-    "error.unexpected" : {
-      "comment" : "Description for AppError.unexpected; %@ is a developer detail",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Something unexpected happened: %@"
+    "home.status.ready": {
+      "comment": "Default status message on the home screen",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready."
           }
         }
       }
     },
-    "error.unknown" : {
-      "comment" : "Description for AppError.unknown",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An unknown error occurred."
+    "home.status.refreshed": {
+      "comment": "Status message shown after a successful refresh",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refreshed successfully."
           }
         }
       }
     },
-    "home.refresh" : {
-      "comment" : "Title of the refresh button",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Refresh"
+    "home.subtitle": {
+      "comment": "Subtitle shown under the home title",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your menu, one click away."
           }
         }
       }
     },
-    "home.status.ready" : {
-      "comment" : "Default status message on the home screen",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ready."
+    "home.title": {
+      "comment": "Title shown on the home screen",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to iMenu"
           }
         }
       }
     },
-    "home.status.refreshed" : {
-      "comment" : "Status message shown after a successful refresh",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Refreshed successfully."
+    "layout.empty.description": {
+      "comment": "Description of the empty state on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu didn’t find any menu bar items to show."
           }
         }
       }
     },
-    "home.subtitle" : {
-      "comment" : "Subtitle shown under the home title",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your menu, one click away."
+    "layout.empty.title": {
+      "comment": "Title of the empty state on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No menu bar items"
           }
         }
       }
     },
-    "home.title" : {
-      "comment" : "Title shown on the home screen",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome to iMenu"
+    "layout.loading": {
+      "comment": "Progress label shown while the Layout page loads items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading your menu bar…"
           }
         }
       }
     },
-    "layout.empty.description" : {
-      "comment" : "Description of the empty state on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu didn’t find any menu bar items to show."
+    "layout.refresh": {
+      "comment": "Toolbar button that re-fetches the menu bar items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
           }
         }
       }
     },
-    "layout.empty.title" : {
-      "comment" : "Title of the empty state on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No menu bar items"
+    "layout.reorderHint": {
+      "comment": "Footer on the Layout page explaining that Layout edits change the real menu bar and the chevron toggles the hidden items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s separator — use the menu bar arrow to show or hide the hidden items. Some system items can’t be moved."
           }
         }
       }
     },
-    "layout.loading" : {
-      "comment" : "Progress label shown while the Layout page loads items",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reading your menu bar…"
+    "layout.retry": {
+      "comment": "Button that retries loading after a failure on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try Again"
           }
         }
       }
     },
-    "layout.refresh" : {
-      "comment" : "Toolbar button that re-fetches the menu bar items",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Refresh"
+    "layout.sample.battery": {
+      "comment": "Sample menu bar item: battery status",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery"
           }
         }
       }
     },
-    "layout.reorderHint" : {
-      "comment" : "Footer on the Layout page explaining that reordering within Visible changes the real menu bar while Hidden is a local list",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden just sets it aside in this list. Some system items can’t be moved."
+    "layout.sample.clock": {
+      "comment": "Sample menu bar item: the menu bar clock",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock"
           }
         }
       }
     },
-    "layout.retry" : {
-      "comment" : "Button that retries loading after a failure on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try Again"
+    "layout.sample.controlCenter": {
+      "comment": "Sample menu bar item: Control Center",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Control Center"
           }
         }
       }
     },
-    "layout.sample.battery" : {
-      "comment" : "Sample menu bar item: battery status",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Battery"
+    "layout.sample.focus": {
+      "comment": "Sample menu bar item: Focus / Do Not Disturb",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus"
           }
         }
       }
     },
-    "layout.sample.clock" : {
-      "comment" : "Sample menu bar item: the menu bar clock",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clock"
+    "layout.sample.keyboard": {
+      "comment": "Sample menu bar item: keyboard / input source",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard"
           }
         }
       }
     },
-    "layout.sample.controlCenter" : {
-      "comment" : "Sample menu bar item: Control Center",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Control Center"
+    "layout.sample.sound": {
+      "comment": "Sample menu bar item: sound/volume",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound"
           }
         }
       }
     },
-    "layout.sample.focus" : {
-      "comment" : "Sample menu bar item: Focus / Do Not Disturb",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Focus"
+    "layout.sample.spotlight": {
+      "comment": "Sample menu bar item: Spotlight search",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spotlight"
           }
         }
       }
     },
-    "layout.sample.keyboard" : {
-      "comment" : "Sample menu bar item: keyboard / input source",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keyboard"
+    "layout.sample.system": {
+      "comment": "Owning-app label for system-owned sample menu bar items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
           }
         }
       }
     },
-    "layout.sample.sound" : {
-      "comment" : "Sample menu bar item: sound/volume",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sound"
+    "layout.sample.wifi": {
+      "comment": "Sample menu bar item: Wi-Fi status",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi"
           }
         }
       }
     },
-    "layout.sample.spotlight" : {
-      "comment" : "Sample menu bar item: Spotlight search",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spotlight"
+    "layout.section.hidden": {
+      "comment": "Header of the Hidden section on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hidden"
           }
         }
       }
     },
-    "layout.sample.system" : {
-      "comment" : "Owning-app label for system-owned sample menu bar items",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "System"
+    "layout.section.hidden.detail": {
+      "comment": "Explanation of the Hidden section on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Items hidden from your menu bar. Show or hide them with the menu bar arrow."
           }
         }
       }
     },
-    "layout.sample.wifi" : {
-      "comment" : "Sample menu bar item: Wi-Fi status",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wi-Fi"
+    "layout.section.hidden.empty": {
+      "comment": "Placeholder shown when the Hidden section has no items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag items here."
           }
         }
       }
     },
-    "layout.section.hidden" : {
-      "comment" : "Header of the Hidden section on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hidden"
+    "layout.section.visible": {
+      "comment": "Header of the Visible section on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visible"
           }
         }
       }
     },
-    "layout.section.hidden.detail" : {
-      "comment" : "Explanation of the Hidden section on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Items you’ve set aside here."
+    "layout.section.visible.detail": {
+      "comment": "Explanation of the Visible section on the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Items shown in your menu bar."
           }
         }
       }
     },
-    "layout.section.hidden.empty" : {
-      "comment" : "Placeholder shown when the Hidden section has no items",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Drag items here."
+    "layout.section.visible.empty": {
+      "comment": "Placeholder shown when the Visible section has no items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag items here."
           }
         }
       }
     },
-    "layout.section.visible" : {
-      "comment" : "Header of the Visible section on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visible"
+    "menubar.about": {
+      "comment": "Menu bar item that opens the main window on the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
           }
         }
       }
     },
-    "layout.section.visible.detail" : {
-      "comment" : "Explanation of the Visible section on the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Items shown in your menu bar."
+    "menubar.hideHiddenItems": {
+      "comment": "Menu bar item that hides the items in the Hidden section from the menu bar",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide Hidden Items"
           }
         }
       }
     },
-    "layout.section.visible.empty" : {
-      "comment" : "Placeholder shown when the Visible section has no items",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Drag items here."
+    "menubar.open": {
+      "comment": "Menu bar item that opens the main window on its current page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
           }
         }
       }
     },
-    "menubar.about" : {
-      "comment" : "Menu bar item that opens the main window on the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About"
+    "menubar.quit": {
+      "comment": "Menu bar item that quits the app entirely",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit iMenu"
           }
         }
       }
     },
-    "menubar.open" : {
-      "comment" : "Menu bar item that opens the main window on its current page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open"
+    "menubar.settings": {
+      "comment": "Menu bar item that opens the main window on the Settings page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
           }
         }
       }
     },
-    "menubar.quit" : {
-      "comment" : "Menu bar item that quits the app entirely",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit iMenu"
+    "menubar.showHiddenItems": {
+      "comment": "Menu bar item that brings the hidden items back into the menu bar",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Hidden Items"
           }
         }
       }
     },
-    "menubar.settings" : {
-      "comment" : "Menu bar item that opens the main window on the Settings page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings"
+    "menubar.toggle.accessibility": {
+      "comment": "Accessibility label for the menu bar chevron that toggles hidden items",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu: show or hide hidden menu bar items"
           }
         }
       }
     },
-    "permissions.accessibility.detail" : {
-      "comment" : "Explanation of why iMenu needs Accessibility permission",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lets iMenu read the menu bar items of other apps."
+    "permissions.accessibility.detail": {
+      "comment": "Explanation of why iMenu needs Accessibility permission",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lets iMenu read and rearrange the menu bar items of other apps."
           }
         }
       }
     },
-    "permissions.accessibility.footer" : {
-      "comment" : "Reassurance about how the Accessibility permission is used",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu uses this only to read your menu bar layout — it never controls other apps."
+    "permissions.accessibility.footer": {
+      "comment": "Reassurance about how the Accessibility permission is used",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu uses this only to read your menu bar layout and to rearrange items when you ask — it never reads anything else or controls other apps."
           }
         }
       }
     },
-    "permissions.accessibility.section" : {
-      "comment" : "Header for the Accessibility section of the Permissions page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accessibility"
+    "permissions.accessibility.section": {
+      "comment": "Header for the Accessibility section of the Permissions page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
           }
         }
       }
     },
-    "permissions.accessibility.title" : {
-      "comment" : "Title of the Accessibility permission row",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accessibility"
+    "permissions.accessibility.title": {
+      "comment": "Title of the Accessibility permission row",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
           }
         }
       }
     },
-    "permissions.openSystemSettings" : {
-      "comment" : "Button that opens System Settings to grant a permission",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open System Settings"
+    "permissions.openSystemSettings": {
+      "comment": "Button that opens System Settings to grant a permission",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open System Settings"
           }
         }
       }
     },
-    "permissions.screenRecording.detail" : {
-      "comment" : "Explanation of why iMenu needs Screen Recording permission",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lets iMenu capture how your menu bar items look so it can show their icons in the second row."
+    "permissions.screenRecording.detail": {
+      "comment": "Explanation of why iMenu needs Screen Recording permission",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lets iMenu capture how your menu bar items look so it can show their icons in the second row."
           }
         }
       }
     },
-    "permissions.screenRecording.footer" : {
-      "comment" : "Reassurance about how the Screen Recording permission is used",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iMenu captures only your menu bar to mirror item icons — nothing else on your screen is recorded or stored."
+    "permissions.screenRecording.footer": {
+      "comment": "Reassurance about how the Screen Recording permission is used",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iMenu captures only your menu bar to mirror item icons — nothing else on your screen is recorded or stored."
           }
         }
       }
     },
-    "permissions.screenRecording.section" : {
-      "comment" : "Header for the Screen Recording section of the Permissions page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screen Recording"
+    "permissions.screenRecording.section": {
+      "comment": "Header for the Screen Recording section of the Permissions page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Recording"
           }
         }
       }
     },
-    "permissions.screenRecording.title" : {
-      "comment" : "Title of the Screen Recording permission row",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screen Recording"
+    "permissions.screenRecording.title": {
+      "comment": "Title of the Screen Recording permission row",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Recording"
           }
         }
       }
     },
-    "permissions.status.granted" : {
-      "comment" : "Status badge shown when a permission is granted",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Granted"
+    "permissions.status.granted": {
+      "comment": "Status badge shown when a permission is granted",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Granted"
           }
         }
       }
     },
-    "permissions.status.notGranted" : {
-      "comment" : "Status badge shown when a permission has not been granted",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not granted"
+    "permissions.status.notGranted": {
+      "comment": "Status badge shown when a permission has not been granted",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not granted"
           }
         }
       }
     },
-    "settings.launchAtLogin" : {
-      "comment" : "Title of the launch-at-login preference",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Launch at login"
+    "settings.launchAtLogin": {
+      "comment": "Title of the launch-at-login preference",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launch at login"
           }
         }
       }
     },
-    "settings.launchAtLogin.detail" : {
-      "comment" : "Explanation of the launch-at-login preference",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open iMenu automatically when you log in."
+    "settings.launchAtLogin.detail": {
+      "comment": "Explanation of the launch-at-login preference",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open iMenu automatically when you log in."
           }
         }
       }
     },
-    "settings.section.general" : {
-      "comment" : "Header for the general section of Settings",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "General"
+    "settings.section.general": {
+      "comment": "Header for the general section of Settings",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
           }
         }
       }
     },
-    "sidebar.about" : {
-      "comment" : "Side menu label for the About page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About"
+    "sidebar.about": {
+      "comment": "Side menu label for the About page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
           }
         }
       }
     },
-    "sidebar.layout" : {
-      "comment" : "Side menu label for the Layout page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Layout"
+    "sidebar.layout": {
+      "comment": "Side menu label for the Layout page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layout"
           }
         }
       }
     },
-    "sidebar.permissions" : {
-      "comment" : "Side menu label for the Permissions page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permissions"
+    "sidebar.permissions": {
+      "comment": "Side menu label for the Permissions page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions"
           }
         }
       }
     },
-    "sidebar.settings" : {
-      "comment" : "Side menu label for the Settings page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings"
+    "sidebar.settings": {
+      "comment": "Side menu label for the Settings page",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -74,6 +74,24 @@ enum L10n {
                    defaultValue: "Quit iMenu",
                    comment: "Menu bar item that quits the app entirely")
         }
+
+        static var hideHiddenItems: String {
+            String(localized: "menubar.hideHiddenItems",
+                   defaultValue: "Hide Hidden Items",
+                   comment: "Menu bar item that hides the items in the Hidden section from the menu bar")
+        }
+
+        static var showHiddenItems: String {
+            String(localized: "menubar.showHiddenItems",
+                   defaultValue: "Show Hidden Items",
+                   comment: "Menu bar item that brings the hidden items back into the menu bar")
+        }
+
+        static var toggleAccessibility: String {
+            String(localized: "menubar.toggle.accessibility",
+                   defaultValue: "iMenu: show or hide hidden menu bar items",
+                   comment: "Accessibility label for the menu bar chevron that toggles hidden items")
+        }
     }
 
     enum Settings {
@@ -123,7 +141,7 @@ enum L10n {
 
         static var hiddenSectionDetail: String {
             String(localized: "layout.section.hidden.detail",
-                   defaultValue: "Items you’ve set aside here.",
+                   defaultValue: "Items hidden from your menu bar. Show or hide them with the menu bar arrow.",
                    comment: "Explanation of the Hidden section on the Layout page")
         }
 
@@ -135,8 +153,8 @@ enum L10n {
 
         static var reorderHint: String {
             String(localized: "layout.reorderHint",
-                   defaultValue: "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden just sets it aside in this list. Some system items can’t be moved.",
-                   comment: "Footer on the Layout page explaining that reordering within Visible changes the real menu bar while Hidden is a local list")
+                   defaultValue: "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s separator — use the menu bar arrow to show or hide the hidden items. Some system items can’t be moved.",
+                   comment: "Footer on the Layout page explaining that Layout edits change the real menu bar and the chevron toggles the hidden items")
         }
 
         static var loading: String {
@@ -320,13 +338,13 @@ enum L10n {
 
         static var accessibilityDetail: String {
             String(localized: "permissions.accessibility.detail",
-                   defaultValue: "Lets iMenu read the menu bar items of other apps.",
+                   defaultValue: "Lets iMenu read and rearrange the menu bar items of other apps.",
                    comment: "Explanation of why iMenu needs Accessibility permission")
         }
 
         static var accessibilityFooter: String {
             String(localized: "permissions.accessibility.footer",
-                   defaultValue: "iMenu uses this only to read your menu bar layout — it never controls other apps.",
+                   defaultValue: "iMenu uses this only to read your menu bar layout and to rearrange items when you ask — it never reads anything else or controls other apps.",
                    comment: "Reassurance about how the Accessibility permission is used")
         }
 
