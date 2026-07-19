@@ -212,7 +212,12 @@ final class LayoutStore {
         case (.visible, .visible):
             applyVisibleReorderIfNeeded(movedID: movedID, visibleOrderBefore: visibleOrderBefore)
         case (.visible, .hidden):
-            parkSeparatorIfNeeded()
+            // No parked divider means no hidden side to drag the item to — keep the
+            // hide a local list edit rather than dropping the item somewhere wrong.
+            guard parkSeparatorIfNeeded() else {
+                AppLogger.shared.warning("Kept a hide local: the divider could not be parked", category: .menuBar)
+                break
+            }
             hider.moveToHidden(id: movedID)
         case (.hidden, .visible):
             hider.moveToVisible(id: movedID)
@@ -243,21 +248,26 @@ final class LayoutStore {
     /// Parks the divider at the hidden/visible boundary once per session. Called by the
     /// app just before the menu bar toggle expands the divider — a freshly created
     /// divider sits rightmost, where expanding would swallow every item, visible ones
-    /// included — and internally before the first hide. A no-op until items are loaded
-    /// (there's no boundary to park at yet).
-    func prepareDividerForHiding() {
+    /// included — and internally before the first hide. Returns whether the divider is
+    /// parked (now or earlier); callers must not expand after a `false` (nothing loaded
+    /// yet, or the park couldn't be carried out).
+    @discardableResult
+    func prepareDividerForHiding() -> Bool {
         parkSeparatorIfNeeded()
     }
 
     /// Parks the separator immediately left of the leftmost still-visible item, once per
     /// session — so before any hide the default is "everything visible" (all items to the
-    /// separator's right), and hidden items then accumulate to its left. Skipped while
-    /// the Visible section is empty, so a too-early call doesn't burn the once-per-session
-    /// slot on a park that had nothing to anchor to.
-    private func parkSeparatorIfNeeded() {
-        guard didParkSeparator == false, visibleItems.isEmpty == false else { return }
+    /// separator's right), and hidden items then accumulate to its left. The
+    /// once-per-session slot is only latched when the park actually succeeds: a too-early
+    /// call (Visible still empty — nothing to anchor to) or a failed drag leaves the slot
+    /// free, so a later attempt can still park.
+    private func parkSeparatorIfNeeded() -> Bool {
+        if didParkSeparator { return true }
+        guard visibleItems.isEmpty == false else { return false }
+        guard hider.positionSeparator(leftOfLeftmostOf: visibleItems.map(\.id)) else { return false }
         didParkSeparator = true
-        hider.positionSeparator(leftOfLeftmostOf: visibleItems.map(\.id))
+        return true
     }
 
     // MARK: - Persistence

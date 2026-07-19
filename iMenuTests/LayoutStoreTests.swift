@@ -36,14 +36,19 @@ struct LayoutStoreTests {
 
     /// Records the real-menu-bar hide/show/park requests the store makes, instead of
     /// synthesizing a ⌘-drag — so tests assert *which* item is hidden or shown, and how
-    /// the separator is parked, without touching the real menu bar.
+    /// the separator is parked, without touching the real menu bar. `parkSucceeds` lets a
+    /// test simulate a park whose drag couldn't be carried out.
     private final class SpyHider: MenuBarHiding {
+        var parkSucceeds = true
         private(set) var hidden: [String] = []
         private(set) var shown: [String] = []
         private(set) var parkCalls: [[String]] = []
         func moveToHidden(id: String) { hidden.append(id) }
         func moveToVisible(id: String) { shown.append(id) }
-        func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) { parkCalls.append(visibleIDs) }
+        func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) -> Bool {
+            parkCalls.append(visibleIDs)
+            return parkSucceeds
+        }
     }
 
     /// A fresh, empty `UserDefaults` domain unique to each test.
@@ -370,7 +375,8 @@ struct LayoutStoreTests {
         let hider = SpyHider()
         let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
 
-        store.prepareDividerForHiding()         // nothing loaded: no boundary to park at
+        // Nothing loaded: no boundary to park at, and the caller must know it.
+        #expect(store.prepareDividerForHiding() == false)
         #expect(hider.parkCalls.isEmpty)
 
         store.load()
@@ -378,6 +384,45 @@ struct LayoutStoreTests {
 
         #expect(hider.parkCalls.count == 1)
         #expect(hider.parkCalls[0] == ["b"])
+    }
+
+    @Test func prepareDividerForHidingReportsWhetherTheDividerIsParked() {
+        let hider = SpyHider()
+        let store = store([item("a")], defaults: makeDefaults(), hider: hider)
+        store.load()
+
+        #expect(store.prepareDividerForHiding() == true)
+        // Already parked: still true, without parking again.
+        #expect(store.prepareDividerForHiding() == true)
+        #expect(hider.parkCalls.count == 1)
+    }
+
+    @Test func aFailedParkDoesNotBurnTheOncePerSessionSlot() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
+        store.load()
+
+        hider.parkSucceeds = false
+        #expect(store.prepareDividerForHiding() == false)
+
+        // The failed attempt must not count as parked — the next call retries.
+        hider.parkSucceeds = true
+        #expect(store.prepareDividerForHiding() == true)
+        #expect(hider.parkCalls.count == 2)
+    }
+
+    @Test func hidingStaysLocalWhenTheParkFails() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
+        store.load()
+        hider.parkSucceeds = false
+
+        store.move(id: "a", toEndOf: .hidden)
+
+        // The local split still changes, but with no parked divider there is no hidden
+        // side to drag the real item to — the real bar must be left untouched.
+        #expect(store.hiddenItems.map(\.id) == ["a"])
+        #expect(hider.hidden.isEmpty)
     }
 
     @Test func aNoOpReorderDoesNotTouchTheRealBar() {

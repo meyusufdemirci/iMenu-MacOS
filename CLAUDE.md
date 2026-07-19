@@ -69,9 +69,18 @@ doubles as the divider itself).
   swallow the visible items too), every expand is preceded by a once-per-session
   **park**: `MenuBarHideController.willExpand` →
   `LayoutStore.prepareDividerForHiding()` ⌘-drags the chevron just left of the
-  leftmost visible item. For the same reason the persisted hide state is
-  restored via `applyPersistedState()` **after** the app wires that hook and
-  loads the items — not in the controller's `init`. While expanded, the chevron
+  leftmost visible item. That preparation **reports success** (`willExpand` and
+  `prepareDividerForHiding` return `Bool`): the park slot is latched only when
+  the park actually succeeded, a failed park keeps a Layout hide local (no real
+  drag), and a failed preparation **aborts the expand and reverts + persists
+  the visible state** — expanding unparked is the failure mode that blanks the
+  whole bar. For the same reason the persisted hide state is
+  restored via `applyPersistedState(hasHiddenItems:)` **after** the app wires
+  that hook and loads the items — not in the controller's `init` — and a
+  persisted "hidden" is **dropped (and re-persisted as visible) when the Hidden
+  section is empty**: restoring it would blank real items the user never chose
+  to hide, which is exactly how a stale flag from an old session kept the
+  chevron invisible at every launch. While expanded, the chevron
   is drawn at the **right edge of a full-button-width image** (a centered
   full-width image ≡ right-aligned), and the right-click menu pops up anchored
   to the button's trailing edge. Moving an item between **Visible and Hidden**
@@ -88,11 +97,29 @@ doubles as the divider itself).
 > **subviews added to the status button are not reliably composited** — keep any
 > custom look inside `button.image` (hence the full-width trailing-chevron image
 > while expanded); a requested `.length` of 10000 is **clamped to ~5000** (read
-> the real width back before sizing the image); and a **fresh status item lands
-> rightmost**, so expanding without parking first swallows every third-party
+> the real width back before sizing the image — measured: `button.bounds.width`
+> reflects the clamped width **synchronously**, right after setting `.length`);
+> and a **fresh status item lands rightmost**, so expanding without parking
+> first swallows every third-party
 > item — never expand before the divider is parked (`willExpand` hook), and
 > restore persisted hide state only after the full pipeline is wired
-> (`applyPersistedState()`, not `init`). The divider needs a **visible glyph** at
+> (`applyPersistedState(hasHiddenItems:)`, not `init`). More measured facts:
+> with `variableLength` the item **does not shrink while the full-width
+> expanded image is still attached** — `collapse()` swaps in the small glyph
+> *before* setting an **explicit** small length (never `variableLength`, so the
+> collapsed width is definite regardless of attached content); and the app's
+> own synthesized park/hide ⌘-drags end with a **⌘-flagged mouse-up on the
+> chevron button itself**, so the click handler **ignores ⌘-modified clicks**
+> (also correct for a user hand-⌘-dragging the chevron — a rearrange is not a
+> toggle). **Debugging trap that cost hours:** this app has a **stale
+> sandbox-era container** (`~/Library/Containers/com.nefarius.iMenu`), and the
+> `defaults` CLI reads/writes the **container's** plist for such bundle ids —
+> while the un-sandboxed app uses `~/Library/Preferences/com.nefarius.iMenu.plist`.
+> The two disagree; trust the app's own logs or `plutil -p` on the real plist,
+> never `defaults read com.nefarius.iMenu`. Also: `AppLogger` info/debug lines
+> don't reach `log show` from Xcode-launched runs, and the interactive shell
+> aliases `log` — use `/usr/bin/log show --info` against an `open`-launched
+> build to see the app's actual decisions. The divider needs a **visible glyph** at
 > the parking ⌘-drag's grab point: a 1px invisible item can't be grabbed (the
 > drag caught the neighboring item instead) — the grab target is the chevron
 > itself. The retired two-item design also showed **creation order is not
@@ -110,9 +137,10 @@ doubles as the divider itself).
 - **Working conventions** below are **in force** — the code follows them (TDD,
   components, `L10n`, `AppError`, `AppLogger`). The throwaway-spike exemption no
   longer applies.
-- Note: the app does **not** try to detect the OS's clip point (PRD FR1). It
-  reads *all* extras items and lets the user arrange them (a Visible/Hidden
-  split), rather than auto-detecting overflow.
+- Note: the app reads *all* extras items and lets the user arrange them (a
+  Visible/Hidden split) rather than acting on overflow automatically.
+  `MenuBarClipDetector` does classify which items are clipped (PRD FR1), but
+  today that result is **log-only** — it doesn't drive any hiding.
 
 > **Docs to reconcile:** `Documents/prd.md` and `Documents/one-pager.md` still
 > carry the original "persistent second row" concept and the "gated on

@@ -62,9 +62,19 @@ final class StatusBarChevron: SeparatorControlling {
         AppLogger.shared.info("Expanded the menu bar chevron divider (width \(Int(width)))", category: .menuBar)
     }
 
+    /// The collapsed chevron's explicit width. Deliberately **not** `variableLength`:
+    /// a variable-length item is sized by the system from whatever content happens to be
+    /// attached at layout time, while an explicit length is the app-requested contract
+    /// the system always honors (the same contract `expand()` relies on) — so collapse
+    /// lands on a definite small width no matter which image is briefly in place.
+    private static let collapsedLength: CGFloat = 24
+
     func collapse() {
-        item.length = NSStatusItem.variableLength
+        // Image first, then length: measured on device, a variable-length item *stays*
+        // at the expanded ~5000pt as long as the full-width expanded image is attached —
+        // the small glyph has to be in place before the length change.
         item.button?.image = Self.symbolImage("chevron.left")
+        item.length = Self.collapsedLength
         AppLogger.shared.info("Collapsed the menu bar chevron divider", category: .menuBar)
     }
 

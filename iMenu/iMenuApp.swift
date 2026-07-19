@@ -92,7 +92,9 @@ struct iMenuApp: App {
                     // same parking path.
                     menuBar.hideController?.willExpand = { layoutStore.prepareDividerForHiding() }
                     layoutStore.load()
-                    menuBar.hideController?.applyPersistedState()
+                    menuBar.hideController?.applyPersistedState(
+                        hasHiddenItems: layoutStore.hiddenItems.isEmpty == false
+                    )
                 }
             }
         }

@@ -28,8 +28,11 @@ final class MenuBarHideController {
     /// Runs just before the separator expands — every time, not only the first — so the
     /// app can make sure the divider is parked at the hidden/visible boundary first
     /// (otherwise expanding a divider that sits rightmost swallows every item, visible
-    /// ones included). Wired by the app; `nil` when nothing needs preparing.
-    @ObservationIgnored var willExpand: (() -> Void)?
+    /// ones included). Returns whether that preparation succeeded: on `false` the expand
+    /// is **aborted** and the state reverts to visible, because expanding an unparked
+    /// divider is the failure mode that blanks the whole menu bar. Wired by the app;
+    /// `nil` when nothing needs preparing.
+    @ObservationIgnored var willExpand: (() -> Bool)?
 
     @ObservationIgnored private let separator: SeparatorControlling
     @ObservationIgnored private let defaults: UserDefaults
@@ -43,13 +46,24 @@ final class MenuBarHideController {
         self.separator = separator
         self.defaults = defaults
         self.isHidden = defaults.object(forKey: Keys.isHidden) as? Bool ?? false
+        AppLogger.shared.info("Hide controller initialized (persisted isHidden: \(isHidden))", category: .menuBar)
     }
 
     /// Restores the persisted state onto the real separator. Deliberately **not** done
     /// at `init`: restoring a persisted "hidden" must run the `willExpand` preparation
     /// (parking the divider), and the app can only wire that hook after this controller
-    /// exists. The app calls this once the full hide pipeline is assembled.
-    func applyPersistedState() {
+    /// exists. The app calls this once the full hide pipeline is assembled — passing
+    /// whether the Layout's Hidden section actually holds anything, because restoring
+    /// "hidden" with **nothing to hide** would still expand the divider and blank real
+    /// items the user never chose to hide (a stale flag from an older session did
+    /// exactly that). In that case the stale flag is dropped and persisted as visible.
+    func applyPersistedState(hasHiddenItems: Bool) {
+        AppLogger.shared.info("Applying persisted hide state (isHidden: \(isHidden))", category: .menuBar)
+        if isHidden && !hasHiddenItems {
+            AppLogger.shared.info("Dropping persisted hidden state: the Hidden section is empty", category: .menuBar)
+            setHidden(false)
+            return
+        }
         apply()
     }
 
@@ -67,10 +81,17 @@ final class MenuBarHideController {
     }
 
     /// Drives the separator to match the current state, letting the app prepare the
-    /// divider's position before anything is pushed off-screen.
+    /// divider's position before anything is pushed off-screen. If that preparation
+    /// fails, the hide is abandoned and the state (including persistence) reverts to
+    /// visible — so what's persisted never claims a hide that didn't happen.
     private func apply() {
         if isHidden {
-            willExpand?()
+            guard willExpand?() ?? true else {
+                isHidden = false
+                defaults.set(false, forKey: Keys.isHidden)
+                AppLogger.shared.warning("Aborted a menu bar hide: the divider could not be parked", category: .menuBar)
+                return
+            }
             separator.expand()
         } else {
             separator.collapse()

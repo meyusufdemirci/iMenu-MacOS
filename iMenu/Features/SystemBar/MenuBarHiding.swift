@@ -27,8 +27,10 @@ protocol MenuBarHiding {
 
     /// Park the separator immediately **left of the leftmost visible item**, so that by
     /// default every visible item sits to its right (nothing hidden) and hidden items can
-    /// accumulate to its left. Best-effort.
-    func positionSeparator(leftOfLeftmostOf visibleIDs: [String])
+    /// accumulate to its left. Returns whether the park could be carried out — callers
+    /// must not treat the divider as parked (or expand it) after a `false`.
+    @discardableResult
+    func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) -> Bool
 }
 
 /// A no-op `MenuBarHiding` for when there's no real menu bar to drive — e.g. a store built
@@ -37,5 +39,5 @@ protocol MenuBarHiding {
 struct NullMenuBarHiding: MenuBarHiding {
     func moveToHidden(id: String) {}
     func moveToVisible(id: String) {}
-    func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) {}
+    func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) -> Bool { true }
 }

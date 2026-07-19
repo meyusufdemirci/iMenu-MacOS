@@ -52,19 +52,20 @@ final class SynthesizedMenuBarHider: MenuBarHiding {
         AppLogger.shared.info("Showed a real menu bar item", category: .menuBar)
     }
 
-    func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) {
+    func positionSeparator(leftOfLeftmostOf visibleIDs: [String]) -> Bool {
         guard let separatorFrame = separator.frame else {
             AppLogger.shared.error(AppError.menuBarItemReorderFailed, category: .menuBar)
-            return
+            return false
         }
         // The leftmost visible item is the boundary: dropping the separator just left of
         // it puts every visible item to the separator's right.
         guard let leftmost = visibleIDs.compactMap({ locator.frame(of: $0) }).min(by: { $0.minX < $1.minX }) else {
             AppLogger.shared.error(AppError.menuBarItemReorderFailed, category: .menuBar)
-            return
+            return false
         }
         let source = CGPoint(x: separatorFrame.midX, y: separatorFrame.midY)
         relocator.dragItem(from: source, to: MenuBarItemDragGeometry.dropPoint(leftOf: leftmost))
         AppLogger.shared.info("Parked the menu bar separator left of the visible items", category: .menuBar)
+        return true
     }
 }

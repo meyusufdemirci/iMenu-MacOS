@@ -69,6 +69,12 @@ final class MenuBarStatusItemController: NSObject {
 
     @objc private func buttonClicked(_ sender: NSStatusBarButton) {
         let event = NSApp.currentEvent
+        // A ⌘-click is the rearrange gesture, not a toggle — and not only for real users:
+        // the app's own synthesized park/hide ⌘-drags end with a ⌘-flagged mouse-up on
+        // this very button, which lands here once the run loop drains. Without this
+        // guard that self-click re-enters the toggle and flips the hide state right
+        // after (or during) the drag that was serving the previous toggle.
+        if event?.modifierFlags.contains(.command) == true { return }
         if event?.type == .rightMouseUp || event?.modifierFlags.contains(.control) == true {
             showMenu()
         } else {

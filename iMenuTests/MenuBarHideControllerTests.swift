@@ -44,7 +44,7 @@ struct MenuBarHideControllerTests {
     @Test func applyPersistedStateCollapsesWhenVisible() {
         let spy = SpySeparator()
         let controller = MenuBarHideController(separator: spy, defaults: makeDefaults())
-        controller.applyPersistedState()
+        controller.applyPersistedState(hasHiddenItems: false)
         #expect(spy.collapseCount == 1)
         #expect(spy.expandCount == 0)
     }
@@ -56,9 +56,28 @@ struct MenuBarHideControllerTests {
 
         let spy = SpySeparator()
         let restored = MenuBarHideController(separator: spy, defaults: defaults)
-        restored.applyPersistedState()
+        restored.applyPersistedState(hasHiddenItems: true)
         #expect(spy.expandCount == 1)
         #expect(spy.collapseCount == 0)
+    }
+
+    @Test func applyPersistedStateRevertsToVisibleWhenNothingIsHidden() {
+        let defaults = makeDefaults()
+        let seed = MenuBarHideController(separator: SpySeparator(), defaults: defaults)
+        seed.setHidden(true)
+
+        // Restoring "hidden" with an empty Hidden section would blank real items the
+        // user never chose to hide — the persisted state must be dropped instead.
+        let spy = SpySeparator()
+        let restored = MenuBarHideController(separator: spy, defaults: defaults)
+        restored.applyPersistedState(hasHiddenItems: false)
+
+        #expect(restored.isHidden == false)
+        #expect(spy.expandCount == 0)
+        #expect(spy.collapseCount == 1)
+        // The drop is persisted, so the next launch starts visible too.
+        let next = MenuBarHideController(separator: SpySeparator(), defaults: defaults)
+        #expect(next.isHidden == false)
     }
 
     @Test func willExpandRunsBeforeEveryExpand() {
@@ -69,6 +88,7 @@ struct MenuBarHideControllerTests {
         controller.willExpand = {
             willExpandCalls += 1
             expandsSeenAtWillExpand.append(spy.expandCount)
+            return true
         }
 
         controller.setHidden(true)    // first expand
@@ -79,6 +99,39 @@ struct MenuBarHideControllerTests {
         // Each time, the hook ran before the separator actually expanded.
         #expect(expandsSeenAtWillExpand == [0, 1])
         #expect(spy.expandCount == 2)
+    }
+
+    @Test func setHiddenAbortsAndRevertsWhenPreparationFails() {
+        let spy = SpySeparator()
+        let defaults = makeDefaults()
+        let controller = MenuBarHideController(separator: spy, defaults: defaults)
+        controller.willExpand = { false }
+
+        controller.setHidden(true)
+
+        // Expanding an unprepared divider would swallow the visible items too, so the
+        // hide is aborted and the state reverts to visible.
+        #expect(controller.isHidden == false)
+        #expect(spy.expandCount == 0)
+        // The reverted state is also what's persisted, so a relaunch doesn't retry
+        // the aborted hide.
+        let restored = MenuBarHideController(separator: SpySeparator(), defaults: defaults)
+        #expect(restored.isHidden == false)
+    }
+
+    @Test func applyPersistedStateAbortsWhenPreparationFails() {
+        let defaults = makeDefaults()
+        let seed = MenuBarHideController(separator: SpySeparator(), defaults: defaults)
+        seed.willExpand = { true }
+        seed.setHidden(true)
+
+        let spy = SpySeparator()
+        let restored = MenuBarHideController(separator: spy, defaults: defaults)
+        restored.willExpand = { false }
+        restored.applyPersistedState(hasHiddenItems: true)
+
+        #expect(restored.isHidden == false)
+        #expect(spy.expandCount == 0)
     }
 
     @Test func toggleHidesAndExpandsTheSeparator() {

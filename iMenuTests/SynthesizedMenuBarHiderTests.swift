@@ -69,9 +69,10 @@ struct SynthesizedMenuBarHiderTests {
         let b = CGRect(x: 100, y: 0, width: 30, height: 24)   // leftmost
         let c = CGRect(x: 500, y: 0, width: 30, height: 24)
         let relocator = SpyRelocator()
-        makeHider(SpyLocator(["a": a, "b": b, "c": c]), relocator, StubSeparator(frame: sepFrame))
+        let parked = makeHider(SpyLocator(["a": a, "b": b, "c": c]), relocator, StubSeparator(frame: sepFrame))
             .positionSeparator(leftOfLeftmostOf: ["a", "b", "c"])
 
+        #expect(parked == true)
         #expect(relocator.drags.count == 1)
         #expect(relocator.drags[0].from == CGPoint(x: sepFrame.midX, y: sepFrame.midY))
         #expect(relocator.drags[0].to == MenuBarItemDragGeometry.dropPoint(leftOf: b))
@@ -93,8 +94,9 @@ struct SynthesizedMenuBarHiderTests {
 
     @Test func positionSeparatorIsNoOpWhenNoVisibleFramesReadable() {
         let relocator = SpyRelocator()
-        makeHider(SpyLocator([:]), relocator, StubSeparator(frame: CGRect(x: 900, y: 0, width: 1, height: 24)))
+        let parked = makeHider(SpyLocator([:]), relocator, StubSeparator(frame: CGRect(x: 900, y: 0, width: 1, height: 24)))
             .positionSeparator(leftOfLeftmostOf: ["x", "y"])
+        #expect(parked == false)
         #expect(relocator.drags.isEmpty)
     }
 }
