@@ -33,7 +33,8 @@ struct iMenuApp: App {
     /// Bridge that lets the AppKit menu open/route the SwiftUI window.
     @State private var windowActions = WindowActions()
 
-    /// Owns the menu bar chevron toggle + separator (replaces `MenuBarExtra`).
+    /// Owns the menu bar chevron toggle, which doubles as the hidden/visible divider
+    /// (replaces `MenuBarExtra`).
     @State private var menuBar = MenuBarStatusItemController()
 
     init() {
@@ -66,7 +67,7 @@ struct iMenuApp: App {
                 permissionsStore: permissionsStore
             )
             .modifier(WindowActionsBinder(actions: windowActions, navigation: navigation))
-            // Create the menu bar status items once, after launch, when the status
+            // Create the menu bar status item once, after launch, when the status
             // bar is ready. `start` is idempotent, so re-appearance is a no-op.
             .task {
                 let didStart = menuBar.start(menuActions: MenuBarStatusItemController.MenuActions(
@@ -76,13 +77,22 @@ struct iMenuApp: App {
                     quit: { NSApplication.shared.terminate(nil) }
                 ))
                 // On the first start, let the Layout store drive hide/show on the same
-                // separator, locating items through the same provider it reads them from.
+                // chevron divider, locating items through the same provider it reads
+                // them from.
                 if didStart, let separator = menuBar.separator {
                     layoutStore.attachHider(SynthesizedMenuBarHider(
                         locator: provider,
                         relocator: SynthesizedMenuBarItemRelocator(),
                         separator: separator
                     ))
+                    // Before any expand, park the divider at the hidden/visible
+                    // boundary — a fresh item sits rightmost, where expanding would
+                    // swallow the visible items too. Load first so the boundary is
+                    // computable, then restore the persisted hide state through the
+                    // same parking path.
+                    menuBar.hideController?.willExpand = { layoutStore.prepareDividerForHiding() }
+                    layoutStore.load()
+                    menuBar.hideController?.applyPersistedState()
                 }
             }
         }

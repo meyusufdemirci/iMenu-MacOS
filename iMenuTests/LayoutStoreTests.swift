@@ -343,6 +343,43 @@ struct LayoutStoreTests {
         #expect(hider.parkCalls.count == 1)   // parked once, on the first hide
     }
 
+    @Test func prepareDividerForHidingParksAtTheVisibleBoundary() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), hider: hider)
+        store.load()
+
+        store.prepareDividerForHiding()
+
+        #expect(hider.parkCalls.count == 1)
+        #expect(hider.parkCalls[0] == ["a", "b", "c"])
+    }
+
+    @Test func prepareDividerForHidingParksOnlyOncePerSession() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
+        store.load()
+
+        store.prepareDividerForHiding()
+        store.prepareDividerForHiding()
+        store.move(id: "a", toEndOf: .hidden)   // a hide would normally park too
+
+        #expect(hider.parkCalls.count == 1)
+    }
+
+    @Test func prepareDividerForHidingBeforeLoadDoesNotCountAsParked() {
+        let hider = SpyHider()
+        let store = store([item("a"), item("b")], defaults: makeDefaults(), hider: hider)
+
+        store.prepareDividerForHiding()         // nothing loaded: no boundary to park at
+        #expect(hider.parkCalls.isEmpty)
+
+        store.load()
+        store.move(id: "a", toEndOf: .hidden)   // the first real hide still parks
+
+        #expect(hider.parkCalls.count == 1)
+        #expect(hider.parkCalls[0] == ["b"])
+    }
+
     @Test func aNoOpReorderDoesNotTouchTheRealBar() {
         let spy = SpyReorderer()
         let store = store([item("a"), item("b"), item("c")], defaults: makeDefaults(), reorderer: spy)

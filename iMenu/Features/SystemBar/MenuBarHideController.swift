@@ -25,19 +25,31 @@ final class MenuBarHideController {
     /// Whether the Hidden items are currently hidden from the menu bar.
     private(set) var isHidden: Bool
 
+    /// Runs just before the separator expands — every time, not only the first — so the
+    /// app can make sure the divider is parked at the hidden/visible boundary first
+    /// (otherwise expanding a divider that sits rightmost swallows every item, visible
+    /// ones included). Wired by the app; `nil` when nothing needs preparing.
+    @ObservationIgnored var willExpand: (() -> Void)?
+
     @ObservationIgnored private let separator: SeparatorControlling
     @ObservationIgnored private let defaults: UserDefaults
 
     /// - Parameters:
     ///   - separator: The owned separator this controller resizes. Tests inject a spy;
-    ///     the app injects the live `StatusBarSeparator`.
+    ///     the app injects the live `StatusBarChevron`.
     ///   - defaults: Where the hide/show state is persisted. Defaults to `.standard`;
     ///     tests inject an isolated suite.
     init(separator: SeparatorControlling, defaults: UserDefaults = .standard) {
         self.separator = separator
         self.defaults = defaults
         self.isHidden = defaults.object(forKey: Keys.isHidden) as? Bool ?? false
-        // Restore the last state onto the real separator at launch.
+    }
+
+    /// Restores the persisted state onto the real separator. Deliberately **not** done
+    /// at `init`: restoring a persisted "hidden" must run the `willExpand` preparation
+    /// (parking the divider), and the app can only wire that hook after this controller
+    /// exists. The app calls this once the full hide pipeline is assembled.
+    func applyPersistedState() {
         apply()
     }
 
@@ -54,9 +66,11 @@ final class MenuBarHideController {
         AppLogger.shared.info("Menu bar hidden items \(hidden ? "hidden" : "shown")", category: .menuBar)
     }
 
-    /// Drives the separator to match the current state.
+    /// Drives the separator to match the current state, letting the app prepare the
+    /// divider's position before anything is pushed off-screen.
     private func apply() {
         if isHidden {
+            willExpand?()
             separator.expand()
         } else {
             separator.collapse()

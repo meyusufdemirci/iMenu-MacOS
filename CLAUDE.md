@@ -9,9 +9,10 @@ macOS silently clips menu bar items that don't fit the available width (a proble
 the notch makes worse), and gives users no way to reorder or hide items short of
 ⌘-dragging them by hand. iMenu is a **Layout editor that edits the real menu bar
 in place**: a window with **Visible/Hidden** sections where dragging reorders the
-real items and moving one to Hidden tucks it behind iMenu's separator, plus a
-**chevron menu bar toggle** that shows or hides the hidden group in one click —
-the separator-expansion mechanic the incumbents (Ice, Bartender, Hidden Bar) use.
+real items and moving one to Hidden tucks it behind iMenu's **chevron menu bar
+toggle**, which doubles as the divider and shows or hides the hidden group in one
+click — the width-expansion mechanic the incumbents (Ice, Bartender, Hidden Bar)
+use, folded into a single status item.
 
 | | |
 |---|---|
@@ -39,7 +40,8 @@ spike built a persistent second row plus `AXPress` click-forwarding, then
 `7edb760` **removed all of it** (second row, click-forwarding, divider-collapse),
 reducing Layout to a local-only organizer. Since then two real menu bar effects
 have been added and **validated on real hardware**: **reordering** (synthesized
-⌘-drag) and **hiding** (separator expansion behind a chevron toggle).
+⌘-drag) and **hiding** (width expansion behind the chevron toggle, which now
+doubles as the divider itself).
 
 - **Reading other apps' items works.** `AccessibilityMenuBarProvider`
   enumerates every running app's `AXExtrasMenuBar` through the Accessibility
@@ -55,31 +57,55 @@ have been added and **validated on real hardware**: **reordering** (synthesized
   the item's and its new neighbor's live frames and posts a **synthesized ⌘-drag**
   (`CGEvent`, in `SynthesizedMenuBarItemRelocator`) to physically relocate the
   item — automating the ⌘-drag a user would do by hand.
-- **Hiding works (validated on device).** iMenu owns two status items: an
-  always-visible **chevron toggle** and a thin **`│` separator** to its left
-  (`MenuBarStatusItemController`, replacing the earlier SwiftUI `MenuBarExtra`).
-  Hidden items live to the separator's **left**; clicking the chevron expands the
-  separator's `.length` (~10000pt), pushing everything on its left off-screen —
-  the classic overflow-manager mechanic, since macOS has **no API to hide another
-  app's status item**. Moving an item between **Visible and Hidden** on the
-  Layout page drags the real item across the separator (`SynthesizedMenuBarHider`
-  via the `MenuBarHiding` seam); the first hide also parks the separator left of
-  the visible items. The toggle itself is instant (a length change, no cursor
-  movement) and its state persists (`MenuBarHideController`). The AppKit menu
-  reaches SwiftUI's `openWindow` through the `WindowActions` bridge.
+- **Hiding works (single-item design; layout verified via the window list).**
+  iMenu owns a **single status item**: a chevron toggle that **doubles as the
+  divider** (`MenuBarStatusItemController` + `StatusBarChevron`, replacing the
+  earlier SwiftUI `MenuBarExtra` and the still-earlier two-item chevron + `│`
+  separator design). Hidden items live to the chevron's **left**; clicking it
+  expands the item's own `.length` (~10000pt, clamped by macOS to ~5000),
+  pushing everything on its left off-screen — the classic overflow-manager
+  mechanic, since macOS has **no API to hide another app's status item**.
+  Because a freshly created item lands **rightmost** (where expanding would
+  swallow the visible items too), every expand is preceded by a once-per-session
+  **park**: `MenuBarHideController.willExpand` →
+  `LayoutStore.prepareDividerForHiding()` ⌘-drags the chevron just left of the
+  leftmost visible item. For the same reason the persisted hide state is
+  restored via `applyPersistedState()` **after** the app wires that hook and
+  loads the items — not in the controller's `init`. While expanded, the chevron
+  is drawn at the **right edge of a full-button-width image** (a centered
+  full-width image ≡ right-aligned), and the right-click menu pops up anchored
+  to the button's trailing edge. Moving an item between **Visible and Hidden**
+  on the Layout page drags the real item across the chevron
+  (`SynthesizedMenuBarHider` via the `MenuBarHiding` seam). The toggle itself
+  is instant (a length change, no cursor movement) and its state persists
+  (`MenuBarHideController`). The AppKit menu reaches SwiftUI's `openWindow`
+  through the `WindowActions` bridge.
 
 > ⚠️ **Hard-won on-device lessons — do not regress these.**
-> Status-item **creation order is not reliable**: the chevron must be assigned to
-> whichever of the two owned items is *actually rightmost* (compare
-> `button?.window?.frame.maxX`), or expanding the separator strands the toggle
-> off-screen. The separator needs a **visible glyph** (`│`): a 1px invisible item
-> can't be grabbed by the parking ⌘-drag, which then grabs the chevron instead.
-> The ⌘-drag hides the cursor and restores it, but tuning knobs (step count,
-> per-step delay, drop margin) may need re-tuning per macOS release. **Still
-> unverified:** OS-pinned items (clock, Control Center), multiple/external
-> displays, Stage Manager, Spaces, full-screen; re-establishing the arrangement
-> after other apps relaunch (v1 is manual: the user re-hides once). The
-> store/coordinator logic is unit-tested; the `NSStatusItem`/CGEvent glue is not.
+> On macOS 26 the menu bar is **rendered by Control Center in its own windows**
+> (layer 25, one per display); the app's own `NSStatusItem` window frame is *not*
+> where the item appears. Practical consequences, all observed on this machine:
+> **subviews added to the status button are not reliably composited** — keep any
+> custom look inside `button.image` (hence the full-width trailing-chevron image
+> while expanded); a requested `.length` of 10000 is **clamped to ~5000** (read
+> the real width back before sizing the image); and a **fresh status item lands
+> rightmost**, so expanding without parking first swallows every third-party
+> item — never expand before the divider is parked (`willExpand` hook), and
+> restore persisted hide state only after the full pipeline is wired
+> (`applyPersistedState()`, not `init`). The divider needs a **visible glyph** at
+> the parking ⌘-drag's grab point: a 1px invisible item can't be grabbed (the
+> drag caught the neighboring item instead) — the grab target is the chevron
+> itself. The retired two-item design also showed **creation order is not
+> reliable** (roles had to be assigned by comparing actual frames); remember that
+> if a second owned item ever returns. The ⌘-drag hides the cursor and restores
+> it, but tuning knobs (step count, per-step delay, drop margin) may need
+> re-tuning per macOS release. **Still unverified:** eyeballs-on-screen check of
+> the expanded chevron glyph (the window-list geometry is verified; pixels are
+> not), the item's `autosaveName` position persistence under Control Center,
+> OS-pinned items (clock, Control Center), multiple/external displays, Stage
+> Manager, Spaces, full-screen; re-establishing the arrangement after other apps
+> relaunch (v1 is manual: the user re-hides once). The store/coordinator logic is
+> unit-tested; the `NSStatusItem`/CGEvent glue is not.
 
 - **Working conventions** below are **in force** — the code follows them (TDD,
   components, `L10n`, `AppError`, `AppLogger`). The throwaway-spike exemption no
@@ -161,12 +187,12 @@ iMenu/
       MenuBarItemLocating.swift            # Seam: an item's current on-screen frame by id
       MenuBarItemRelocating.swift          # Seam: the low-level "⌘-drag from A to B" intent
       SynthesizedMenuBarItemRelocator.swift # Live impl: posts the ⌘-drag CGEvents
-      MenuBarHiding.swift                  # Store's seam: hide/show item X, park separator (+ Null impl)
-      SynthesizedMenuBarHider.swift        # Coordinator: drags items across the separator
-      SeparatorControlling.swift           # Seam: expand/collapse the separator + its frame (+ Null impl)
-      StatusBarSeparator.swift             # Live impl: the │ width-expander NSStatusItem
-      MenuBarHideController.swift          # @Observable hide state; persists, drives the separator
-      MenuBarStatusItemController.swift    # AppKit owner: chevron toggle + separator + right-click menu
+      MenuBarHiding.swift                  # Store's seam: hide/show item X, park the divider (+ Null impl)
+      SynthesizedMenuBarHider.swift        # Coordinator: drags items across the divider
+      SeparatorControlling.swift           # Seam: expand/collapse the divider + its frame (+ Null impl)
+      StatusBarChevron.swift               # Live impl: the chevron NSStatusItem that doubles as the width-expanding divider
+      MenuBarHideController.swift          # @Observable hide state; persists, drives the divider
+      MenuBarStatusItemController.swift    # AppKit owner: the single chevron status item + right-click menu
     Permissions/
       PermissionsView.swift         # Permissions page (Accessibility status + grant)
       PermissionsStore.swift        # @Observable permission state

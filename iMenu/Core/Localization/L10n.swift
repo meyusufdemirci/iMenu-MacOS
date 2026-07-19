@@ -153,7 +153,7 @@ enum L10n {
 
         static var reorderHint: String {
             String(localized: "layout.reorderHint",
-                   defaultValue: "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s separator — use the menu bar arrow to show or hide the hidden items. Some system items can’t be moved.",
+                   defaultValue: "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s chevron — click the chevron to show or hide the hidden items. Some system items can’t be moved.",
                    comment: "Footer on the Layout page explaining that Layout edits change the real menu bar and the chevron toggles the hidden items")
         }
 

@@ -240,11 +240,22 @@ final class LayoutStore {
         }
     }
 
+    /// Parks the divider at the hidden/visible boundary once per session. Called by the
+    /// app just before the menu bar toggle expands the divider — a freshly created
+    /// divider sits rightmost, where expanding would swallow every item, visible ones
+    /// included — and internally before the first hide. A no-op until items are loaded
+    /// (there's no boundary to park at yet).
+    func prepareDividerForHiding() {
+        parkSeparatorIfNeeded()
+    }
+
     /// Parks the separator immediately left of the leftmost still-visible item, once per
     /// session — so before any hide the default is "everything visible" (all items to the
-    /// separator's right), and hidden items then accumulate to its left.
+    /// separator's right), and hidden items then accumulate to its left. Skipped while
+    /// the Visible section is empty, so a too-early call doesn't burn the once-per-session
+    /// slot on a park that had nothing to anchor to.
     private func parkSeparatorIfNeeded() {
-        guard didParkSeparator == false else { return }
+        guard didParkSeparator == false, visibleItems.isEmpty == false else { return }
         didParkSeparator = true
         hider.positionSeparator(leftOfLeftmostOf: visibleItems.map(\.id))
     }

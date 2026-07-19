@@ -7,12 +7,12 @@
 
 import CoreGraphics
 
-/// The seam over iMenu's owned **separator** status item — the invisible width-expander
-/// that hides the menu bar items to its left by growing its length.
+/// The seam over iMenu's owned **divider** status item — the chevron toggle whose width
+/// grows to hide the menu bar items to its left.
 ///
 /// `MenuBarHideController` depends on this intent ("expand to hide, collapse to show")
 /// rather than on `NSStatusItem`, so its state/persistence logic is unit-testable with a
-/// spy. The live implementation (`StatusBarSeparator`) resizes the real status item; a
+/// spy. The live implementation (`StatusBarChevron`) resizes the real status item; a
 /// store with no real menu bar to drive uses `NullSeparatorControlling`.
 protocol SeparatorControlling {
     /// Grow the separator so the items to its left are pushed off-screen (hidden).

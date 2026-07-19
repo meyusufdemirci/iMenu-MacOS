@@ -345,7 +345,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s separator — use the menu bar arrow to show or hide the hidden items. Some system items can’t be moved."
+            "value": "Drag items within Visible to reorder them in your real menu bar. Moving an item to Hidden tucks it behind iMenu’s chevron — click the chevron to show or hide the hidden items. Some system items can’t be moved."
           }
         }
       }
