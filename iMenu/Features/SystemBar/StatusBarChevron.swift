@@ -17,12 +17,23 @@ import AppKit
 ///
 /// **How the chevron stays visible while expanded:** the button centers its image, so at
 /// ~10000pt a plain symbol would sit thousands of points off-screen. Instead the expanded
-/// state sets an image **as wide as the button itself** (macOS clamps the requested
-/// length, so the real width is read back) with the chevron glyph drawn at its right
-/// edge — a centered full-width image *is* right-aligned. This deliberately stays inside
-/// the button's normal image pipeline: on macOS 26 the menu bar is rendered by Control
-/// Center in its own windows, and subviews added to the button are not reliably
-/// composited there.
+/// state sets an image **as wide as the button itself** with the chevron glyph drawn at
+/// its right edge — a centered full-width image *is* right-aligned. This deliberately
+/// stays inside the button's normal image pipeline: on macOS 26 the menu bar is rendered
+/// by Control Center in its own windows, and subviews added to the button are not
+/// reliably composited there.
+///
+/// Two hard-won rules keep that image honest (an image wider than the button clips the
+/// glyph out and blanks the chevron — measured on device):
+/// - The expanded length is **derived from the screen**, not a huge constant: just wide
+///   enough to push everything on the chevron's left off-screen. Requesting ~10000pt made
+///   macOS grant different widths to the app's window and Control Center's mirror of it,
+///   and the stale first measurement baked a 5000pt image into what ended up an ~1100pt
+///   button.
+/// - The width is **not trusted once**: macOS re-clamps the button's width *after*
+///   `expand()` returns (the synchronous read-back is only the first clamp), so the
+///   image is rebuilt from the button's actual bounds on every frame change while
+///   expanded.
 ///
 /// The chevron always points the way that reveals: **left** when everything is shown
 /// (click to push the hidden group off to the left), **right** when hidden (click to
@@ -38,28 +49,74 @@ import AppKit
 final class StatusBarChevron: SeparatorControlling {
 
     private let item: NSStatusItem
-    private let expandedLength: CGFloat
+    private let maximumExpandedLength: CGFloat
+    private var isExpanded = false
+    private var frameObserver: (any NSObjectProtocol)?
 
     /// - Parameters:
     ///   - item: the status item to drive — the app's one and only.
-    ///   - expandedLength: how wide to grow when hiding — large enough to push every
-    ///     left-hand item off the screen. Tuning knob for on-device validation.
-    init(item: NSStatusItem, expandedLength: CGFloat = 10_000) {
+    ///   - maximumExpandedLength: upper bound on how wide to grow when hiding. The real
+    ///     expanded length is derived from the chevron's on-screen position; this cap
+    ///     only applies when that position can't be read. Tuning knob for on-device
+    ///     validation.
+    init(item: NSStatusItem, maximumExpandedLength: CGFloat = 10_000) {
         self.item = item
-        self.expandedLength = expandedLength
+        self.maximumExpandedLength = maximumExpandedLength
         // Remember the item's bar position across relaunches, so the parked
         // hidden/visible boundary sticks instead of resetting to rightmost.
         item.autosaveName = "iMenuChevron"
         item.button?.imageScaling = .scaleNone
+        if let button = item.button {
+            // macOS re-clamps the expanded width after `expand()` returns; follow every
+            // frame change so the trailing-glyph image always matches the real width.
+            button.postsFrameChangedNotifications = true
+            frameObserver = NotificationCenter.default.addObserver(
+                forName: NSView.frameDidChangeNotification,
+                object: button,
+                queue: .main
+            ) { [weak self] _ in
+                self?.syncExpandedImageToButtonSize()
+            }
+        }
         collapse()
     }
 
+    deinit {
+        if let frameObserver {
+            NotificationCenter.default.removeObserver(frameObserver)
+        }
+    }
+
     func expand() {
-        item.length = expandedLength
-        let width = item.button?.bounds.width ?? expandedLength
-        let height = item.button?.bounds.height ?? NSStatusBar.system.thickness
-        item.button?.image = Self.trailingChevronImage(symbol: "chevron.right", width: width, height: height)
-        AppLogger.shared.info("Expanded the menu bar chevron divider (width \(Int(width)))", category: .menuBar)
+        // Just enough width to push everything on the chevron's left off the screen:
+        // the distance from the screen's left edge to the chevron's right edge (which
+        // stays pinned to its right-hand neighbor while the item grows leftward). Read
+        // before the length change, while the collapsed frame is still trustworthy.
+        let requested = frame.map { min(maximumExpandedLength, $0.maxX) } ?? maximumExpandedLength
+        isExpanded = true
+        item.length = requested
+        syncExpandedImageToButtonSize()
+        AppLogger.shared.info(
+            "Expanded the menu bar chevron divider (requested \(Int(requested)), granted \(Int(item.button?.bounds.width ?? -1)))",
+            category: .menuBar
+        )
+    }
+
+    /// Rebuilds the expanded trailing-glyph image at the button's *actual* size whenever
+    /// it drifts — the button width is what macOS granted, not what was requested, and
+    /// it can change again after `expand()` returns. An image wider than the button gets
+    /// centered and clipped, which cuts the right-edge glyph off entirely (an invisible
+    /// chevron); redrawing at the real width keeps the glyph on the visible edge.
+    private func syncExpandedImageToButtonSize() {
+        guard isExpanded, let button = item.button else { return }
+        let width = button.bounds.width
+        let height = button.bounds.height
+        guard width > 0, height > 0, button.image?.size.width != width else { return }
+        button.image = Self.trailingChevronImage(symbol: "chevron.right", width: width, height: height)
+        AppLogger.shared.info(
+            "Redrew the expanded chevron image at the button's real width (\(Int(width)))",
+            category: .menuBar
+        )
     }
 
     /// The collapsed chevron's explicit width. Deliberately **not** `variableLength`:
@@ -70,9 +127,11 @@ final class StatusBarChevron: SeparatorControlling {
     private static let collapsedLength: CGFloat = 24
 
     func collapse() {
-        // Image first, then length: measured on device, a variable-length item *stays*
-        // at the expanded ~5000pt as long as the full-width expanded image is attached —
-        // the small glyph has to be in place before the length change.
+        // Flag first, so the frame changes the shrink triggers don't re-attach an
+        // expanded image; then image, then length: measured on device, a variable-length
+        // item *stays* at the expanded width as long as the full-width expanded image is
+        // attached — the small glyph has to be in place before the length change.
+        isExpanded = false
         item.button?.image = Self.symbolImage("chevron.left")
         item.length = Self.collapsedLength
         AppLogger.shared.info("Collapsed the menu bar chevron divider", category: .menuBar)

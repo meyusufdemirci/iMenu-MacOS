@@ -96,9 +96,20 @@ doubles as the divider itself).
 > where the item appears. Practical consequences, all observed on this machine:
 > **subviews added to the status button are not reliably composited** — keep any
 > custom look inside `button.image` (hence the full-width trailing-chevron image
-> while expanded); a requested `.length` of 10000 is **clamped to ~5000** (read
-> the real width back before sizing the image — measured: `button.bounds.width`
-> reflects the clamped width **synchronously**, right after setting `.length`);
+> while expanded); the expanded width **cannot be measured once** — a requested
+> `.length` of 10000 first clamps to ~5000 (readable synchronously) but macOS
+> **re-clamps again later** to the actually-available bar width (measured:
+> 5000 → 1102 after layout settled), and an image built from the stale first
+> number gets centered-and-clipped in the narrower button, cutting the
+> right-edge glyph off entirely — an **invisible chevron** (this shipped and was
+> caught on device 2026-07-19). The cure is twofold, both in `StatusBarChevron`:
+> **derive the requested length from the screen** (the chevron's right-edge x —
+> just enough to push everything on its left off-screen, so requested ≈ granted
+> and the app window and Control Center's mirror can't diverge; measured:
+> requested 1160, granted 1160) and **resync the image to `button.bounds` on
+> every frame change** while expanded (`postsFrameChangedNotifications` +
+> `NSView.frameDidChangeNotification`), so any later re-clamp redraws the glyph
+> at the real width;
 > and a **fresh status item lands rightmost**, so expanding without parking
 > first swallows every third-party
 > item — never expand before the divider is parked (`willExpand` hook), and
@@ -126,9 +137,11 @@ doubles as the divider itself).
 > reliable** (roles had to be assigned by comparing actual frames); remember that
 > if a second owned item ever returns. The ⌘-drag hides the cursor and restores
 > it, but tuning knobs (step count, per-step delay, drop margin) may need
-> re-tuning per macOS release. **Still unverified:** eyeballs-on-screen check of
-> the expanded chevron glyph (the window-list geometry is verified; pixels are
-> not), the item's `autosaveName` position persistence under Control Center,
+> re-tuning per macOS release. The expanded chevron glyph is now
+> **pixel-verified on device** (2026-07-19: synthesized real clicks + menu bar
+> screenshots in both directions — visible pointing right while expanded,
+> visible pointing left after collapse; before the two-stage-clamp fix it was
+> genuinely invisible). **Still unverified:** the item's `autosaveName` position persistence under Control Center,
 > OS-pinned items (clock, Control Center), multiple/external displays, Stage
 > Manager, Spaces, full-screen; re-establishing the arrangement after other apps
 > relaunch (v1 is manual: the user re-hides once). The store/coordinator logic is
