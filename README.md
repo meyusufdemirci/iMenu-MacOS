@@ -120,6 +120,11 @@ Then select the **iMenu** scheme and a **My Mac** destination, and press **⌘R*
 run. On first launch, grant Accessibility from the **Permissions** page so iMenu
 can read your menu bar.
 
+> **Signing.** The project ships with no development team set, so Xcode will ask
+> you to pick one the first time you build. Choose your own team under
+> **Signing & Capabilities** (or select *Sign to Run Locally*) — and leave
+> `DEVELOPMENT_TEAM` out of any pull request.
+
 > The project uses **file-system-synchronized groups** (`objectVersion = 77`). Any
 > file you drop into the `iMenu/`, `iMenuTests/`, or `iMenuUITests/` folders on
 > disk is automatically part of the build — you never hand-edit `project.pbxproj`.
@@ -325,5 +330,5 @@ issue to discuss larger changes before starting, and keep pull requests focused.
 
 ## License
 
-This project is open source. Add your chosen license here (e.g. MIT) in a
-`LICENSE` file at the repository root, and reference it from this section.
+iMenu is released under the [MIT License](LICENSE). It is free to use, modify,
+and distribute — there is no paid tier, no accounts, and no telemetry.
