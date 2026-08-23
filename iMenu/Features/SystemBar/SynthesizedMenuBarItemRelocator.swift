@@ -36,6 +36,11 @@ final class SynthesizedMenuBarItemRelocator: MenuBarItemRelocating {
     /// Virtual key code for the left Command key (`kVK_Command`).
     private static let commandKeyCode: CGKeyCode = 0x37
 
+    private static let modifierSettleDelay: useconds_t = 90_000
+    private static let grabSettleDelay: useconds_t = 60_000
+    private static let dropSettleDelay: useconds_t = 70_000
+    private static let releaseSettleDelay: useconds_t = 50_000
+
     private let stepCount: Int
     private let stepDelay: useconds_t
 
@@ -81,15 +86,20 @@ final class SynthesizedMenuBarItemRelocator: MenuBarItemRelocating {
         // between here and the matching key-up, so ⌘ is never left stuck down.
         postKey(Self.commandKeyCode, down: true, source: eventSource)
 
+        usleep(Self.modifierSettleDelay)
+
         CGWarpMouseCursorPosition(source)
         postMouse(.mouseMoved, at: source, source: eventSource)
         postMouse(.leftMouseDown, at: source, source: eventSource)
+        usleep(Self.grabSettleDelay)
         for point in path {
             postMouse(.leftMouseDragged, at: point, source: eventSource)
             usleep(stepDelay)
         }
+        usleep(Self.dropSettleDelay)
         postMouse(.leftMouseUp, at: destination, source: eventSource)
 
+        usleep(Self.releaseSettleDelay)
         postKey(Self.commandKeyCode, down: false, source: eventSource)
 
         AppLogger.shared.info(
